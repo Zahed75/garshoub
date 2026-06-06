@@ -88,17 +88,22 @@ header, footer, #top_menu_container, .o_frontend_footer {
     margin-top: auto;
     padding-top: 30px;
     text-align: center;
+    min-height: 120px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    border: 2px dashed rgba(212, 168, 67, 0.15);
 }
 
 .garshoub-left-image img {
     width: 100%;
     max-width: 420px;
     height: auto;
-    max-height: 220px;
+    max-height: 240px;
     object-fit: contain;
     border-radius: 16px;
     opacity: 0.95;
     display: block;
+    margin: 0 auto;
 }
 
 .garshoub-badge {

@@ -14,13 +14,13 @@ def post_init_hook(env):
     Smtp = env['ir.mail_server']
     if not Smtp.search([('name', '=', 'Syscomatic Gmail SMTP')]):
         Smtp.create({
-            'name': 'Syscomatic Gmail SMTP',
+            'name': 'Garshoub Gmail SMTP',
             'smtp_host': 'smtp.gmail.com',
             'smtp_port': 587,
-            'smtp_user': 'tech.syscomatic@gmail.com',
-            'smtp_pass': 'boqs tsjb jppz gknm',
+            'smtp_user': 'fgarshoub@gmail.com',
+            'smtp_pass': 'ythx yyrf dtwc zdni',
             'smtp_encryption': 'starttls',
-            'from_filter': 'tech.syscomatic@gmail.com',
+            'from_filter': 'fgarshoub@gmail.com',
             'sequence': 1,
         })
 

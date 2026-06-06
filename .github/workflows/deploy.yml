@@ -3,11 +3,13 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
+      - main
       - development
       - staging
       - production
   pull_request:
     branches:
+      - main
       - development
       - staging
       - production
@@ -28,7 +30,7 @@ jobs:
         with:
           context: .
           push: false
-          tags: sysco-odoo:latest
+          tags: garshoub-odoo:latest
 
       - name: Validate Odoo Configuration
         run: |
@@ -37,13 +39,13 @@ jobs:
           echo "Odoo configuration is valid"
 
   deploy-staging:
-    name: Deploy to Staging (hq.flowllet.com)
+    name: Deploy to Staging (staging.garshoub.com)
     needs: build-and-test
     if: github.ref == 'refs/heads/staging'
     runs-on: ubuntu-latest
     environment:
       name: staging
-      url: https://hq.flowllet.com
+      url: https://staging.garshoub.com
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -51,9 +53,10 @@ jobs:
       - name: Deploy to Staging Server
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.DEV_SSH_HOST }}
-          username: ${{ secrets.DEV_SSH_USER }}
-          key: ${{ secrets.DEV_SSH_KEY }}
+          host: ${{ secrets.STAGING_SSH_HOST }}
+          username: ${{ secrets.STAGING_SSH_USER }}
+          password: ${{ secrets.STAGING_SSH_PASS }}
+          port: ${{ secrets.STAGING_SSH_PORT || '22' }}
           command_timeout: 15m
           script: |
             set -e
@@ -61,11 +64,11 @@ jobs:
             echo "Deploying to Staging Server..."
             echo "========================================="
             
-            cd /www/wwwroot/sysco-19.0
+            cd /www/wwwroot/garshoub-staging || cd /www/wwwroot/sysco-19.0 || cd /opt/garshoub || cd ~/garshoub
             
             # Backup database before deployment
             echo "Creating pre-deployment backup..."
-            docker compose exec -T db pg_dump -U ${{ secrets.DEV_DB_USER || 'odoo' }} -d ${{ secrets.DEV_DB_NAME || 'flowllet' }} > ./backups/pre_deploy_$(date +%Y%m%d_%H%M%S).sql || true
+            docker compose exec -T db pg_dump -U ${{ secrets.STAGING_DB_USER || 'odoo' }} -d "${{ secrets.STAGING_DB_NAME || 'Garshoub HQ' }}" > ./backups/pre_deploy_$(date +%Y%m%d_%H%M%S).sql || true
             
             # Pull latest code from staging branch
             git fetch origin
@@ -80,13 +83,13 @@ jobs:
             echo "Staging deployment completed!"
 
   deploy-production:
-    name: Deploy to Production (hq.syscomatic.com)
+    name: Deploy to Production (erp.garshoub.com)
     needs: build-and-test
     if: github.ref == 'refs/heads/production'
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: https://hq.syscomatic.com
+      url: https://erp.garshoub.com
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -96,7 +99,8 @@ jobs:
         with:
           host: ${{ secrets.PROD_SSH_HOST }}
           username: ${{ secrets.PROD_SSH_USER }}
-          key: ${{ secrets.PROD_SSH_KEY }}
+          password: ${{ secrets.PROD_SSH_PASS }}
+          port: ${{ secrets.PROD_SSH_PORT || '22' }}
           command_timeout: 15m
           script: |
             set -x
@@ -104,7 +108,7 @@ jobs:
             echo "Deploying to Production Server..."
             echo "========================================="
             
-            cd /www/wwwroot/sysco-19.0
+            cd /www/wwwroot/garshoub-prod || cd /www/wwwroot/sysco-19.0 || cd /opt/garshoub || cd ~/garshoub
             
             # Older Docker API on production server
             export DOCKER_API_VERSION=1.41
@@ -120,7 +124,7 @@ jobs:
             # Backup database before deployment (only if db container is running)
             echo "Creating pre-deployment backup..."
             if $DC ps | grep -q "odoo_postgres"; then
-              $DC exec -T db pg_dump -U ${{ secrets.PROD_DB_USER || 'odoo' }} -d ${{ secrets.PROD_DB_NAME || 'odoo' }} > ./backups/pre_deploy_$(date +%Y%m%d_%H%M%S).sql || echo "Backup failed, continuing..."
+              $DC exec -T db pg_dump -U ${{ secrets.PROD_DB_USER || 'odoo' }} -d "${{ secrets.PROD_DB_NAME || 'Garshoub HQ' }}" > ./backups/pre_deploy_$(date +%Y%m%d_%H%M%S).sql || echo "Backup failed, continuing..."
             else
               echo "DB container not running, skipping backup..."
             fi

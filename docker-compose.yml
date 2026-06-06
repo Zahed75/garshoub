@@ -5,8 +5,8 @@ services:
     image: postgres:15
     container_name: odoo_postgres
     environment:
-      - POSTGRES_DB=${DB_NAME:-flowllet}
-      - POSTGRES_PASSWORD=${DB_PASSWORD:-Sysc@2@26#}
+      - POSTGRES_DB=${DB_NAME:-Garshoub HQ}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-G@rsh@ub2@26}
       - POSTGRES_USER=${DB_USER:-odoo}
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
@@ -40,8 +40,8 @@ services:
     environment:
       - DB_HOST=db
       - DB_USER=${DB_USER:-odoo}
-      - DB_PASSWORD=${DB_PASSWORD:-Sysc@2@26#}
-      - DB_NAME=${DB_NAME:-flowllet}
+      - DB_PASSWORD=${DB_PASSWORD:-G@rsh@ub2@26}
+      - DB_NAME=${DB_NAME:-Garshoub HQ}
       - DB_PORT=5432
     restart: unless-stopped
     networks:

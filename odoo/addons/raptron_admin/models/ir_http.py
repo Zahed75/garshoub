@@ -6,16 +6,10 @@ class IrHttp(models.AbstractModel):
     _inherit = "ir.http"
 
     @classmethod
-    def _match(cls, endpoint):
-        """Intercept root requests on erp.garshoub.com and redirect to /web.
+    def _pre_dispatch(cls, rule, args):
+        """Redirect erp.garshoub.com root to /web before website module serves it."""
+        result = super()._pre_dispatch(rule, args)
         
-        When website module is installed, it takes over the root '/' route.
-        We need to force erp.garshoub.com to always serve the ERP backend,
-        while garshoub.com serves the public website.
-        """
-        result = super()._match(endpoint)
-        
-        # Check if this is the root path on ERP subdomain
         if request and request.httprequest:
             path = request.httprequest.path
             host = request.httprequest.host.lower()

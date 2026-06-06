@@ -14,48 +14,21 @@ until pg_isready -h "${DB_HOST:-db}" -p 5432 -U "${DB_USER:-odoo}"; do
 done
 echo "Database is ready!"
 
-# Check if this is first run or update needed
-if [ -f "/var/lib/odoo/.initialized" ]; then
-    echo "Existing installation detected. Checking for updates..."
-    UPDATE_MODULES=""
-    
-    # Check if custom module has changes
-    if [ -n "$(find /opt/odoo/odoo/addons/raptron_admin -name '*.py' -newer /var/lib/odoo/.initialized 2>/dev/null)" ] || \
-       [ -n "$(find /opt/odoo/odoo/addons/raptron_admin/views -name '*.xml' -newer /var/lib/odoo/.initialized 2>/dev/null)" ] || \
-       [ -n "$(find /opt/odoo/odoo/addons/raptron_admin/static -name '*.css' -newer /var/lib/odoo/.initialized 2>/dev/null)" ]; then
-        UPDATE_MODULES="raptron_admin"
-        echo "Changes detected in raptron_admin module!"
-    fi
-    
-    # Run updates if needed
-    if [ -n "$UPDATE_MODULES" ]; then
-        echo "Updating modules: $UPDATE_MODULES"
-        python3 /opt/odoo/odoo-bin -c /opt/odoo/odoo.conf \
-            -d "${DB_NAME:-Garshoub HQ}" \
-            --update=$UPDATE_MODULES \
-            --stop-after-init
-        
-        # Clear asset cache (preserve initialization marker)
-        echo "Clearing asset cache..."
-        rm -rf /var/lib/odoo/assets-*
-        
-        echo "Module update completed!"
-    else
-        echo "No changes detected. Skipping update."
-    fi
-else
-    echo "First run detected. Initializing database..."
-    
-    # First run - update all modules
-    python3 /opt/odoo/odoo-bin -c /opt/odoo/odoo.conf \
-        -d "${DB_NAME:-Garshoub HQ}" \
-        -i base,web,mail,crm,raptron_admin \
-        --stop-after-init
-    
-    # Create marker file
-    touch /var/lib/odoo/.initialized
-    echo "Initialization completed!"
-fi
+# ALWAYS update raptron_admin on every startup
+# This ensures template/CSS changes are applied without manual intervention
+echo "Updating raptron_admin module..."
+python3 /opt/odoo/odoo-bin -c /opt/odoo/odoo.conf \
+    -d "${DB_NAME:-Garshoub HQ}" \
+    --update=raptron_admin \
+    --stop-after-init
+
+# Clear asset cache to force fresh CSS/JS bundles
+echo "Clearing asset cache..."
+rm -rf /var/lib/odoo/assets-*
+
+# Create/update initialization marker
+touch /var/lib/odoo/.initialized
+echo "Module update completed!"
 
 # Update admin user credentials from code (runs on EVERY startup)
 echo "Updating admin credentials..."

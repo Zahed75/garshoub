@@ -16,15 +16,26 @@ class ResUsers(models.Model):
                 return
         return super()._check_credentials(password, env)
 
-    @api.depends("manual_im_status")
+    @api.depends("manual_im_status", "presence_ids.status")
     def _compute_im_status(self):
-        """Override to respect manual status, especially 'online' behind reverse proxies."""
+        """Override to respect manual status, especially 'online' behind reverse proxies.
+        
+        The original mail module's _compute_im_status does:
+            user.im_status = (
+                "offline"
+                if user.presence_ids.status in ["offline", False]
+                else user.manual_im_status or user.presence_ids.status
+            )
+        
+        This means if presence_ids.status is "offline", manual_im_status is IGNORED.
+        We fix this by checking manual_im_status FIRST.
+        """
         for user in self:
             if user.manual_im_status:
-                # Manual status always wins
+                # Manual status ALWAYS wins over presence data
                 user.im_status = user.manual_im_status
-            elif user.presence_ids:
-                user.im_status = user.presence_ids.sorted("last_poll", reverse=True)[0].status or "offline"
+            elif user.presence_ids.status and user.presence_ids.status != "offline":
+                user.im_status = user.presence_ids.status
             else:
                 user.im_status = "offline"
 
@@ -34,10 +45,3 @@ class ResUsers(models.Model):
         if self.manual_im_status:
             return
         return super()._update_presence(inactivity_period, identity_field, identity_value)
-
-    def _im_status_computed(self):
-        """Override to prevent im_status from being reset by bus presence."""
-        # If we have a manual status, don't let the bus system overwrite it
-        if self.manual_im_status:
-            return
-        return super()._im_status_computed()

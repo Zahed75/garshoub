@@ -55,4 +55,4 @@ EXPOSE 8069 8072
 ENTRYPOINT ["/opt/odoo/entrypoint.sh"]
 
 # Run Odoo
-CMD /opt/odoo/odoo-bin -c /opt/odoo/odoo.conf -d ${DB_NAME:-flowllet} --data-dir /var/lib/odoo
+CMD /opt/odoo/odoo-bin -c /opt/odoo/odoo.conf -d "${DB_NAME:-Garshoub HQ}" --data-dir /var/lib/odoo

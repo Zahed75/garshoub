@@ -8,7 +8,7 @@ echo "========================================="
 
 # Wait for database to be ready
 echo "Waiting for database connection..."
-until pg_isready -h ${DB_HOST:-db} -p 5432 -U ${DB_USER:-odoo}; do
+until pg_isready -h "${DB_HOST:-db}" -p 5432 -U "${DB_USER:-odoo}"; do
     echo "Database is unavailable - sleeping"
     sleep 2
 done
@@ -31,7 +31,7 @@ if [ -f "/var/lib/odoo/.initialized" ]; then
     if [ -n "$UPDATE_MODULES" ]; then
         echo "Updating modules: $UPDATE_MODULES"
         python3 /opt/odoo/odoo-bin -c /opt/odoo/odoo.conf \
-            -d ${DB_NAME:-flowllet} \
+            -d "${DB_NAME:-Garshoub HQ}" \
             --update=$UPDATE_MODULES \
             --stop-after-init
         
@@ -48,7 +48,7 @@ else
     
     # First run - update all modules
     python3 /opt/odoo/odoo-bin -c /opt/odoo/odoo.conf \
-        -d ${DB_NAME:-flowllet} \
+        -d "${DB_NAME:-Garshoub HQ}" \
         -i base,web,mail,crm,raptron_admin \
         --stop-after-init
     

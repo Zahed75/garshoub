@@ -53,7 +53,6 @@ header, footer, #top_menu_container, .o_frontend_footer {
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     padding: 50px;
     overflow: hidden;
     background: linear-gradient(160deg, var(--garshoub-green-dark) 0%, var(--garshoub-green) 60%, var(--garshoub-green-light) 100%);
@@ -75,6 +74,10 @@ header, footer, #top_menu_container, .o_frontend_footer {
     z-index: 2;
     max-width: 480px;
     margin-bottom: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .garshoub-left-image {
@@ -84,15 +87,18 @@ header, footer, #top_menu_container, .o_frontend_footer {
     max-width: 480px;
     margin-top: auto;
     padding-top: 30px;
+    text-align: center;
 }
 
 .garshoub-left-image img {
     width: 100%;
     max-width: 420px;
     height: auto;
+    max-height: 220px;
     object-fit: contain;
     border-radius: 16px;
     opacity: 0.95;
+    display: block;
 }
 
 .garshoub-badge {

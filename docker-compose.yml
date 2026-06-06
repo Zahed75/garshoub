@@ -15,7 +15,7 @@ services:
     networks:
       - odoo-network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U "${DB_USER:-odoo}" -d "${DB_NAME:-Garshoub HQ}"" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-odoo}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -66,8 +66,8 @@ services:
     environment:
       - DB_HOST=db
       - DB_USER=${DB_USER:-odoo}
-      - DB_PASSWORD=${DB_PASSWORD:-Sysc@2@26#}
-      - DB_NAME=${DB_NAME:-flowllet}
+      - DB_PASSWORD=${DB_PASSWORD:-G@rsh@ub2@26}
+      - DB_NAME=${DB_NAME:-Garshoub HQ}
     volumes:
       - ./backups:/backups
     entrypoint: |

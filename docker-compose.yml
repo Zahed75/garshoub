@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   db:
-    image: postgres:15
+    image: pgvector/pgvector:pg15
     container_name: odoo_postgres
     environment:
       - POSTGRES_DB=${DB_NAME:-Garshoub HQ}
@@ -59,7 +59,7 @@ services:
         max-file: "3"
 
   backup:
-    image: postgres:15
+    image: pgvector/pgvector:pg15
     container_name: odoo_backup
     depends_on:
       - db
@@ -68,6 +68,7 @@ services:
       - DB_USER=${DB_USER:-odoo}
       - DB_PASSWORD=${DB_PASSWORD:-G@rsh@ub2@26}
       - DB_NAME=${DB_NAME:-Garshoub HQ}
+      - PGPASSWORD=${DB_PASSWORD:-G@rsh@ub2@26}
     volumes:
       - ./backups:/backups
     entrypoint: |

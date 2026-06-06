@@ -57,6 +57,10 @@ else
     echo "Initialization completed!"
 fi
 
+# Update admin user credentials from code (idempotent)
+echo "Updating admin credentials..."
+python3 /opt/odoo/update_admin.py || echo "Admin update skipped"
+
 # Clean old assets on every startup
 rm -rf /var/lib/odoo/assets-*
 

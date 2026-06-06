@@ -65,7 +65,7 @@ header, footer, #top_menu_container, .o_frontend_footer {
 }
 
 .garshoub-brand img {
-    height: 60px;
+    height: 90px;
     width: auto;
     filter: brightness(0) invert(1);
 }
@@ -74,7 +74,25 @@ header, footer, #top_menu_container, .o_frontend_footer {
     position: relative;
     z-index: 2;
     max-width: 480px;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
+}
+
+.garshoub-left-image {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 480px;
+    margin-top: auto;
+    padding-top: 30px;
+}
+
+.garshoub-left-image img {
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    object-fit: contain;
+    border-radius: 16px;
+    opacity: 0.95;
 }
 
 .garshoub-badge {

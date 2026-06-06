@@ -24,6 +24,9 @@
                             <h1>Welcome to <br/> <span class="garshoub-title-white">Al Garshoub</span> <br/> <span class="garshoub-title-gold">Retail Hub</span></h1>
                             <p>Manage outlet sales, inventory, purchase and accounts in one central platform.</p>
                         </div>
+                        <div class="garshoub-left-image">
+                            <img src="/raptron_admin/static/src/img/loginbg.png" alt="Al Garshoub Products"/>
+                        </div>
                     </div>
 
                     <div class="garshoub-auth-right">

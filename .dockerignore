@@ -10,6 +10,7 @@
 !entrypoint.sh
 !deploy.sh
 !odoo-bin
+!update_admin.py
 
 # Specific exclusions within allowed folders
 **/.git

@@ -3,7 +3,7 @@
 
     <template id="garshoub_login_layout"
               inherit_id="web.login_layout"
-              name="Al Garshoub Modern Login"
+              name="Al Garshoub Login"
               priority="99">
 
         <xpath expr="t" position="replace">
@@ -14,29 +14,26 @@
 
                 <link rel="stylesheet" href="/raptron_admin/static/src/css/login_style.css"/>
 
-                <div class="sysco-auth-wrapper">
-                    <div class="sysco-auth-left d-none d-lg-flex">
-                        <div class="sysco-overlay"></div>
-                        <div class="sysco-brand">
+                <div class="garshoub-auth-wrapper">
+                    <div class="garshoub-auth-left d-none d-lg-flex">
+                        <div class="garshoub-brand">
                             <img src="/raptron_admin/static/src/img/al_garshoub_logo.png" alt="Al Garshoub"/>
                         </div>
-                        <div class="sysco-content">
-                            <span class="sysco-badge">INTERNAL MANAGEMENT PORTAL</span>
+                        <div class="garshoub-content">
+                            <span class="garshoub-badge">INTERNAL MANAGEMENT PORTAL</span>
                             <h1>Welcome to <br/> <span class="garshoub-title-white">Al Garshoub</span> <br/> <span class="garshoub-title-gold">Retail Hub</span></h1>
                             <p>Manage outlet sales, inventory, purchase and accounts in one central platform.</p>
                         </div>
-                        <div class="garshoub-left-decoration"></div>
                     </div>
 
-                    <div class="sysco-auth-right">
-                        <div class="sysco-login-card">
-                            <!-- Logo at top of login card (mobile only) -->
-                            <div class="sysco-login-logo">
+                    <div class="garshoub-auth-right">
+                        <div class="garshoub-login-card">
+                            <div class="garshoub-login-logo">
                                 <img src="/raptron_admin/static/src/img/al_garshoub_logo.png" alt="Al Garshoub"/>
                             </div>
 
                             <h2>Login to your account</h2>
-                            <p class="sysco-subtitle">Enter your credentials to access the Al Garshoub Management Portal.</p>
+                            <p class="garshoub-subtitle">Please enter your credentials to continue</p>
                             
                             <t t-if="message">
                                 <div class="alert alert-danger" role="alert">
@@ -44,47 +41,12 @@
                                 </div>
                             </t>
                             
-                            <div class="sysco-form-container">
+                            <div class="garshoub-form-container">
                                 <t t-out="0"/>
-                            </div>
-
-                            <button type="button" class="garshoub-admin-btn" onclick="fillAdminLogin()">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                                Login as Administrator
-                            </button>
-
-                            <div class="garshoub-divider"><span>OR</span></div>
-
-                            <button type="button" class="garshoub-qr-btn" onclick="showQRAuth()">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                                Use QR Authentication
-                            </button>
-
-                            <div class="garshoub-footer">
-                                <div class="garshoub-footer-icon">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                                </div>
-                                <div>
-                                    <div>© 2026 Al Garshoub Foodstuff Trading LLC</div>
-                                    <div>Dubai, United Arab Emirates</div>
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <script>
-                    function fillAdminLogin() {
-                        var loginInput = document.querySelector('input[name="login"]');
-                        var pwdInput = document.querySelector('input[name="password"]');
-                        if (loginInput) loginInput.value = 'fgarshoub@gmail.com';
-                        if (pwdInput) pwdInput.value = 'G@rsh@ub2@26';
-                        if (pwdInput) pwdInput.focus();
-                    }
-                    function showQRAuth() {
-                        alert('QR Authentication coming soon!');
-                    }
-                </script>
             </t>
         </xpath>
 

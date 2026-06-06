@@ -4,19 +4,16 @@
     --garshoub-green-light: #164D3A;
     --garshoub-gold: #D4A843;
     --garshoub-gold-dark: #B08D35;
-    --garshoub-text: #111827;
+    --garshoub-text: #1f2937;
     --garshoub-muted: #6b7280;
-    --garshoub-bg: #f4f7fb;
-    --garshoub-border: #dbe2ea;
+    --garshoub-border: #e5e7eb;
 }
 
-/* Reset */
 * {
     box-sizing: border-box;
 }
 
-html,
-body {
+html, body {
     margin: 0;
     padding: 0;
     min-height: 100%;
@@ -25,30 +22,25 @@ body {
 body.o_web_login {
     margin: 0 !important;
     padding: 0 !important;
-    background: var(--garshoub-bg) !important;
+    background: #f8fafc !important;
     font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif !important;
     overflow-x: hidden;
     color: var(--garshoub-text);
 }
 
 /* Hide Odoo default layout */
-header,
-footer,
-#top_menu_container,
-.o_frontend_footer {
+header, footer, #top_menu_container, .o_frontend_footer {
     display: none !important;
 }
 
-#wrapwrap,
-main,
-#wrap {
+#wrapwrap, main, #wrap {
     padding: 0 !important;
     margin: 0 !important;
     background: transparent !important;
 }
 
 /* Main wrapper */
-.sysco-auth-wrapper {
+.garshoub-auth-wrapper {
     width: 100%;
     min-height: 100vh;
     display: flex;
@@ -56,7 +48,7 @@ main,
 }
 
 /* Left side */
-.sysco-auth-left {
+.garshoub-auth-left {
     width: 50%;
     position: relative;
     display: flex;
@@ -64,54 +56,47 @@ main,
     justify-content: space-between;
     padding: 50px;
     overflow: hidden;
-    background: linear-gradient(135deg, var(--garshoub-green-dark) 0%, var(--garshoub-green) 50%, var(--garshoub-green-light) 100%);
+    background: linear-gradient(160deg, var(--garshoub-green-dark) 0%, var(--garshoub-green) 60%, var(--garshoub-green-light) 100%);
 }
 
-.sysco-overlay {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at top right, rgba(212, 168, 67, 0.12), transparent 50%);
-}
-
-.sysco-brand {
+.garshoub-brand {
     position: relative;
     z-index: 2;
 }
 
-.sysco-brand img {
-    height: 70px;
+.garshoub-brand img {
+    height: 60px;
     width: auto;
     filter: brightness(0) invert(1);
 }
 
-.sysco-content {
+.garshoub-content {
     position: relative;
     z-index: 2;
-    max-width: 560px;
+    max-width: 480px;
     margin-bottom: 40px;
 }
 
-.sysco-badge {
+.garshoub-badge {
     display: inline-flex;
     align-items: center;
-    padding: 10px 18px;
+    padding: 8px 16px;
     border-radius: 999px;
     background: rgba(212, 168, 67, 0.15);
-    backdrop-filter: blur(12px);
     border: 1px solid rgba(212, 168, 67, 0.3);
     color: var(--garshoub-gold);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.5px;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
 }
 
-.sysco-content h1 {
-    margin: 0 0 24px 0;
+.garshoub-content h1 {
+    margin: 0 0 20px 0;
     color: white;
-    font-size: 64px;
+    font-size: 52px;
     font-weight: 800;
-    line-height: 1.1;
+    line-height: 1.15;
 }
 
 .garshoub-title-white {
@@ -122,99 +107,66 @@ main,
     color: var(--garshoub-gold);
 }
 
-.sysco-content p {
+.garshoub-content p {
     margin: 0;
-    max-width: 500px;
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 17px;
-    line-height: 1.7;
-}
-
-.garshoub-left-decoration {
-    position: absolute;
-    bottom: -60px;
-    left: -60px;
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(212, 168, 67, 0.15) 0%, transparent 70%);
-    z-index: 1;
+    max-width: 420px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 16px;
+    line-height: 1.6;
 }
 
 /* Right side */
-.sysco-auth-right {
+.garshoub-auth-right {
     width: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 40px;
-    background: #ffffff;
+    background: #f8fafc;
 }
 
 /* Login card */
-.sysco-login-card {
+.garshoub-login-card {
     width: 100%;
-    max-width: 480px;
-    padding: 48px;
-    border-radius: 24px;
+    max-width: 420px;
+    padding: 40px;
+    border-radius: 20px;
     background: #ffffff;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
     border: 1px solid #f0f0f0;
 }
 
-.sysco-login-card h2 {
-    margin: 0 0 10px 0;
+.garshoub-login-logo {
+    display: none;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.garshoub-login-logo img {
+    height: 48px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.garshoub-login-card h2 {
+    margin: 0 0 8px 0;
     color: var(--garshoub-text);
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 700;
     line-height: 1.2;
 }
 
-.sysco-subtitle {
-    margin: 0 0 32px 0;
+.garshoub-subtitle {
+    margin: 0 0 28px 0;
     color: var(--garshoub-muted);
     font-size: 14px;
     line-height: 1.5;
 }
 
-/* Password header */
-.sysco-password-header {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    width: 100% !important;
-    margin-bottom: 12px !important;
-}
-
-.sysco-label {
-    margin: 0 !important;
-    padding: 0 !important;
-    color: var(--garshoub-text) !important;
-    font-size: 14px !important;
-    font-weight: 600 !important;
-    line-height: 1.4 !important;
-}
-
-.sysco-reset-link {
-    margin: 0 !important;
-    padding: 0 !important;
-    color: var(--garshoub-gold) !important;
-    text-decoration: none !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    line-height: 1.4 !important;
-    white-space: nowrap !important;
-    transition: all 0.2s ease;
-}
-
-.sysco-reset-link:hover {
-    color: var(--garshoub-gold-dark) !important;
-    text-decoration: underline !important;
-}
-
 /* Form fields */
-.sysco-form-container label,
-.sysco-form-container .col-form-label {
+.garshoub-form-container label,
+.garshoub-form-container .col-form-label {
     margin-bottom: 8px !important;
     color: var(--garshoub-text) !important;
     font-size: 14px !important;
@@ -222,152 +174,58 @@ main,
     display: block !important;
 }
 
-.sysco-form-container .form-control,
-.sysco-form-container input[type="text"],
-.sysco-form-container input[type="email"],
-.sysco-form-container input[type="password"] {
+.garshoub-form-container .form-control,
+.garshoub-form-container input[type="text"],
+.garshoub-form-container input[type="email"],
+.garshoub-form-container input[type="password"] {
     width: 100% !important;
-    height: 52px !important;
-    border-radius: 12px !important;
+    height: 48px !important;
+    border-radius: 10px !important;
     border: 1px solid var(--garshoub-border) !important;
-    background: #f8fafc !important;
-    padding: 0 16px !important;
+    background: #f9fafb !important;
+    padding: 0 14px !important;
     font-size: 14px !important;
     color: var(--garshoub-text) !important;
     box-shadow: none !important;
     transition: all 0.2s ease;
 }
 
-.sysco-form-container .form-control:focus,
-.sysco-form-container input:focus {
+.garshoub-form-container .form-control:focus,
+.garshoub-form-container input:focus {
     background: white !important;
     border-color: var(--garshoub-gold) !important;
-    box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15) !important;
+    box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.12) !important;
     outline: none !important;
 }
 
-/* Primary button (Sign In) */
-.sysco-form-container .btn-primary,
-.sysco-form-container .oe_login_buttons > button {
+/* Login button */
+.garshoub-form-container .btn-primary,
+.garshoub-form-container .oe_login_buttons > button {
     width: 100% !important;
-    height: 52px !important;
+    height: 48px !important;
     border: none !important;
-    border-radius: 12px !important;
+    border-radius: 10px !important;
     background: linear-gradient(135deg, var(--garshoub-gold), var(--garshoub-gold-dark)) !important;
     color: white !important;
     font-size: 15px !important;
     font-weight: 700 !important;
     cursor: pointer !important;
-    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
-    margin-top: 10px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 8px !important;
+    transition: all 0.2s ease !important;
+    margin-top: 8px !important;
 }
 
-.sysco-form-container .btn-primary:hover,
-.sysco-form-container .oe_login_buttons > button:hover {
+.garshoub-form-container .btn-primary:hover,
+.garshoub-form-container .oe_login_buttons > button:hover {
     transform: translateY(-1px) !important;
-    background: linear-gradient(135deg, var(--garshoub-gold-dark), #9A7A2E) !important;
-    box-shadow: 0 8px 20px rgba(212, 168, 67, 0.3) !important;
+    box-shadow: 0 6px 16px rgba(212, 168, 67, 0.3) !important;
 }
 
-/* Admin button */
-.garshoub-admin-btn {
-    width: 100%;
-    height: 52px;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--garshoub-green), var(--garshoub-green-light));
-    color: white;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    margin-top: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-
-.garshoub-admin-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(11, 61, 46, 0.25);
-}
-
-/* Divider */
-.garshoub-divider {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    margin: 20px 0;
-    color: var(--garshoub-muted);
-    font-size: 13px;
-    font-weight: 500;
-}
-
-.garshoub-divider::before,
-.garshoub-divider::after {
-    content: '';
-    flex: 1;
-    border-bottom: 1px solid var(--garshoub-border);
-}
-
-.garshoub-divider span {
-    padding: 0 16px;
-}
-
-/* QR button */
-.garshoub-qr-btn {
-    width: 100%;
-    height: 52px;
-    border: 1.5px solid var(--garshoub-border);
-    border-radius: 12px;
-    background: white;
-    color: var(--garshoub-text);
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-
-.garshoub-qr-btn:hover {
-    border-color: var(--garshoub-gold);
-    background: #fffdf5;
-}
-
-/* Footer */
-.garshoub-footer {
-    margin-top: 28px;
-    padding-top: 20px;
-    border-top: 1px solid #f0f0f0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    color: var(--garshoub-muted);
-    font-size: 12px;
-    text-align: center;
-    line-height: 1.5;
-}
-
-.garshoub-footer-icon {
-    color: var(--garshoub-gold);
-    flex-shrink: 0;
-}
-
-/* Fix for Forgot Password Link position in standard Odoo form */
-.sysco-form-container .field-password {
+/* Forgot password link */
+.garshoub-form-container .field-password {
     position: relative;
 }
 
-.sysco-form-container .field-password a[href*="reset_password"] {
+.garshoub-form-container .field-password a[href*="reset_password"] {
     position: absolute;
     top: 0;
     right: 0;
@@ -377,26 +235,28 @@ main,
     text-decoration: none;
 }
 
-/* Password wrapper for CSS-only toggle */
+.garshoub-form-container .field-password a[href*="reset_password"]:hover {
+    text-decoration: underline;
+}
+
+/* Password wrapper */
 .password-wrapper {
     position: relative;
     width: 100%;
 }
 
 .password-wrapper .form-control {
-    padding-right: 52px !important;
+    padding-right: 48px !important;
 }
 
 .password-toggle {
     position: absolute;
     right: 0;
     top: 0;
-    height: 52px;
-    width: 52px;
-    background: #f8fafc;
-    border: 1px solid var(--garshoub-border);
-    border-left: none;
-    border-radius: 0 12px 12px 0;
+    height: 48px;
+    width: 48px;
+    background: transparent;
+    border: none;
     cursor: pointer;
     color: var(--garshoub-muted);
     display: flex;
@@ -406,33 +266,18 @@ main,
 }
 
 .password-toggle:hover {
-    background: #f0f2f5;
     color: var(--garshoub-gold);
-}
-
-.password-toggle i {
-    font-size: 16px;
-}
-
-/* Focus state for password wrapper */
-.password-wrapper:focus-within .form-control {
-    border-color: var(--garshoub-gold);
-}
-
-.password-wrapper:focus-within .password-toggle {
-    border-color: var(--garshoub-gold);
-    border-left: none;
 }
 
 /* Error messages */
 .alert-danger {
-    background: #fee2e2 !important;
+    background: #fef2f2 !important;
     border: 1px solid #fecaca !important;
     color: #dc2626 !important;
-    border-radius: 12px !important;
-    padding: 12px 16px !important;
+    border-radius: 10px !important;
+    padding: 10px 14px !important;
     font-size: 13px !important;
-    margin-bottom: 20px !important;
+    margin-bottom: 16px !important;
 }
 
 /* Placeholder */
@@ -441,121 +286,83 @@ main,
     font-size: 14px;
 }
 
-/* Logo inside login card — only visible on mobile */
-.sysco-login-logo {
-    display: none;
-    text-align: center;
-    margin-bottom: 16px;
-}
-
-.sysco-login-logo img {
-    height: 56px;
-    width: auto;
-    max-width: 100%;
-    object-fit: contain;
-}
-
 /* Responsive */
 @media (max-width: 992px) {
-    .sysco-auth-wrapper {
+    .garshoub-auth-wrapper {
         flex-direction: column;
     }
 
-    .sysco-auth-left {
+    .garshoub-auth-left {
         display: none !important;
     }
 
-    .sysco-auth-right {
+    .garshoub-auth-right {
         width: 100% !important;
         min-height: 100vh;
         padding: 20px !important;
-        background: var(--garshoub-bg) !important;
+        background: #f8fafc !important;
     }
 
-    .sysco-login-card {
+    .garshoub-login-card {
         width: 100%;
         max-width: 100%;
-        padding: 32px 20px;
+        padding: 28px 20px;
         box-shadow: none;
         border: none;
         background: transparent;
     }
 
-    .sysco-login-logo {
+    .garshoub-login-logo {
         display: block;
     }
 
-    .sysco-login-logo img {
-        height: 48px;
+    .garshoub-login-logo img {
+        height: 44px;
     }
 
-    .sysco-login-card h2 {
-        font-size: 24px;
-    }
-
-    .form-control,
-    input[type="email"],
-    input[type="password"] {
-        height: 48px !important;
-    }
-
-    .password-toggle {
-        height: 48px;
-    }
-
-    .sysco-login-btn,
-    .garshoub-admin-btn,
-    .garshoub-qr-btn {
-        height: 48px;
-    }
-}
-
-@media (max-width: 480px) {
-    .sysco-auth-right {
-        padding: 16px !important;
-    }
-
-    .sysco-login-card {
-        padding: 24px 16px;
-    }
-
-    .sysco-login-card h2 {
+    .garshoub-login-card h2 {
         font-size: 22px;
-    }
-
-    .sysco-subtitle {
-        font-size: 13px;
-        margin-bottom: 24px;
-    }
-
-    .sysco-label {
-        font-size: 13px !important;
-    }
-
-    .sysco-reset-link {
-        font-size: 12px !important;
     }
 
     .form-control,
     input[type="email"],
     input[type="password"] {
         height: 46px !important;
-        font-size: 14px !important;
     }
 
     .password-toggle {
         height: 46px;
         width: 46px;
     }
+}
 
-    .password-toggle i {
-        font-size: 14px;
+@media (max-width: 480px) {
+    .garshoub-auth-right {
+        padding: 16px !important;
     }
 
-    .sysco-login-btn,
-    .garshoub-admin-btn,
-    .garshoub-qr-btn {
-        height: 46px;
-        font-size: 14px;
+    .garshoub-login-card {
+        padding: 24px 16px;
+    }
+
+    .garshoub-login-card h2 {
+        font-size: 20px;
+    }
+
+    .garshoub-subtitle {
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+
+    .form-control,
+    input[type="email"],
+    input[type="password"] {
+        height: 44px !important;
+        font-size: 14px !important;
+    }
+
+    .password-toggle {
+        height: 44px;
+        width: 44px;
     }
 }

@@ -280,6 +280,17 @@ header, footer, #top_menu_container, .o_frontend_footer {
     margin-bottom: 16px !important;
 }
 
+/* Hide Odoo default extra elements: passkey, signup, etc. */
+.garshoub-form-container .o_login_auth,
+.garshoub-form-container .oe_login_buttons ~ div:not(.alert):not(.oe_login_form),
+.garshoub-form-container a[href*="/web/signup"],
+.garshoub-form-container .text-center:has(a[href*="/web/signup"]),
+.garshoub-form-container .text-center.small.mt-4,
+.garshoub-form-container .text-center.small.mt-4.pt-3,
+.garshoub-form-container div:has(> .o_login_auth) {
+    display: none !important;
+}
+
 /* Placeholder */
 ::placeholder {
     color: #9ca3af !important;

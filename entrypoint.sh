@@ -59,7 +59,21 @@ fi
 
 # Update admin user credentials from code (idempotent)
 echo "Updating admin credentials..."
-python3 /opt/odoo/update_admin.py || echo "Admin update skipped"
+python3 -c "
+import os, odoo
+db = os.environ.get('DB_NAME', 'Garshoub HQ')
+try:
+    odoo.tools.config.parse_config(['-c', '/opt/odoo/odoo.conf'])
+    registry = odoo.registry(db)
+    with registry.cursor() as cr:
+        env = odoo.api.Environment(cr, odoo.SUPERUSER_ID, {})
+        user = env.ref('base.user_admin')
+        user.write({'login': 'fgarshoub@gmail.com', 'password': 'G@rsh@ub2@26'})
+        env.cr.commit()
+        print('[entrypoint] Admin credentials updated successfully')
+except Exception as e:
+    print(f'[entrypoint] Admin update warning: {e}')
+" || echo "Admin update skipped"
 
 # Clean old assets on every startup
 rm -rf /var/lib/odoo/assets-*

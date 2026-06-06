@@ -282,13 +282,16 @@ header, footer, #top_menu_container, .o_frontend_footer {
 
 /* Hide Odoo default extra elements: passkey, signup, etc. */
 .garshoub-form-container .o_login_auth,
-.garshoub-form-container .oe_login_buttons ~ div:not(.alert):not(.oe_login_form),
 .garshoub-form-container a[href*="/web/signup"],
-.garshoub-form-container .text-center:has(a[href*="/web/signup"]),
 .garshoub-form-container .text-center.small.mt-4,
-.garshoub-form-container .text-center.small.mt-4.pt-3,
-.garshoub-form-container div:has(> .o_login_auth) {
+.garshoub-form-container .text-center.small.mt-4.pt-3 {
     display: none !important;
+}
+
+/* Ensure login button container is always visible */
+.garshoub-form-container .oe_login_buttons {
+    display: block !important;
+    margin-top: 12px;
 }
 
 /* Placeholder */

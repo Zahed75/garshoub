@@ -1,10 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Primary login layout override (when website is NOT installed) -->
     <template id="garshoub_login_layout"
               inherit_id="web.login_layout"
               name="Al Garshoub Login"
-              priority="99">
+              priority="1">
+
+        <xpath expr="t" position="replace">
+            <t t-call="web.frontend_layout">
+                <t t-set="no_header" t-value="True"/>
+                <t t-set="no_footer" t-value="True"/>
+                <t t-set="body_classname" t-value="'o_web_login'"/>
+
+                <link rel="stylesheet" href="/raptron_admin/static/src/css/login_style.css"/>
+
+                <div class="garshoub-auth-wrapper">
+                    <div class="garshoub-auth-left d-none d-lg-flex">
+                        <div class="garshoub-brand">
+                            <img src="/raptron_admin/static/src/img/al_garshoub_logo.png" alt="Al Garshoub"/>
+                        </div>
+                        <div class="garshoub-content">
+                            <span class="garshoub-badge">INTERNAL MANAGEMENT PORTAL</span>
+                            <h1>Welcome to <br/> <span class="garshoub-title-white">Al Garshoub</span> <br/> <span class="garshoub-title-gold">Retail Hub</span></h1>
+                            <p>Manage outlet sales, inventory, purchase and accounts in one central platform.</p>
+                        </div>
+                        <div class="garshoub-left-image">
+                            <img src="/raptron_admin/static/src/img/loginbg.png" alt="Al Garshoub Products"/>
+                        </div>
+                    </div>
+
+                    <div class="garshoub-auth-right">
+                        <div class="garshoub-login-card">
+                            <div class="garshoub-login-logo">
+                                <img src="/raptron_admin/static/src/img/al_garshoub_logo.png" alt="Al Garshoub"/>
+                            </div>
+
+                            <h2>Login to your account</h2>
+                            <p class="garshoub-subtitle">Please enter your credentials to continue</p>
+                            
+                            <t t-if="message">
+                                <div class="alert alert-danger" role="alert">
+                                    <t t-out="message"/>
+                                </div>
+                            </t>
+                            
+                            <div class="garshoub-form-container">
+                                <t t-out="0"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+
+    </template>
+
+    <!-- Website login layout override (when website IS installed) -->
+    <template id="garshoub_website_login_layout"
+              inherit_id="website.login_layout"
+              name="Al Garshoub Website Login"
+              priority="1">
 
         <xpath expr="t" position="replace">
             <t t-call="web.frontend_layout">

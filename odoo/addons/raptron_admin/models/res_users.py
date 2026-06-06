@@ -34,3 +34,10 @@ class ResUsers(models.Model):
         if self.manual_im_status:
             return
         return super()._update_presence(inactivity_period, identity_field, identity_value)
+
+    def _im_status_computed(self):
+        """Override to prevent im_status from being reset by bus presence."""
+        # If we have a manual status, don't let the bus system overwrite it
+        if self.manual_im_status:
+            return
+        return super()._im_status_computed()

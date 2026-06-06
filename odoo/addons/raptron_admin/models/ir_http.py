@@ -6,26 +6,24 @@ class IrHttp(models.AbstractModel):
     _inherit = "ir.http"
 
     @classmethod
-    def _dispatch(cls, endpoint):
-        """Prevent website module from serving on erp.garshoub.com root.
+    def _match(cls, endpoint):
+        """Intercept root requests on erp.garshoub.com and redirect to /web.
         
-        When website is installed, it tries to serve pages on the root domain.
-        We force erp.garshoub.com to always redirect to /web for ERP access.
-        The actual public website should be on garshoub.com (separate domain).
+        When website module is installed, it takes over the root '/' route.
+        We need to force erp.garshoub.com to always serve the ERP backend,
+        while garshoub.com serves the public website.
         """
-        result = super()._dispatch(endpoint)
+        result = super()._match(endpoint)
         
-        # If this is the root path on the ERP subdomain and user is logged in,
-        # ensure they land in the backend
-        if request and request.httprequest and request.httprequest.path == '/':
-            host = request.httprequest.host
-            if 'erp.' in host or 'staging.' in host:
-                # Don't let website serve on ERP subdomain root
-                # The website module will handle garshoub.com separately
-                pass
+        # Check if this is the root path on ERP subdomain
+        if request and request.httprequest:
+            path = request.httprequest.path
+            host = request.httprequest.host.lower()
+            
+            # If accessing erp.garshoub.com or staging.garshoub.com root
+            if path == '/' and ('erp.' in host or 'staging.' in host):
+                # Redirect to /web so website doesn't serve here
+                from werkzeug.utils import redirect
+                return redirect('/web', code=302)
         
         return result
-
-    def _get_frontend_langs(self):
-        """Override to prevent website from changing the login page."""
-        return super()._get_frontend_langs()

@@ -50,3 +50,22 @@ def post_init_hook(env):
     if layout_template:
         layout_template.write({'priority': 1})
         env.cr.commit()
+
+    # 6. Ensure website login template also has highest priority
+    website_login = env['ir.ui.view'].search([
+        ('xml_id', '=', 'raptron_admin.garshoub_website_login_layout')
+    ], limit=1)
+    if website_login:
+        website_login.write({'priority': 1})
+        env.cr.commit()
+
+    # 7. Deactivate website's login layout override if it exists
+    # The website module creates a view that overrides web.login_layout
+    # We need to ensure our template takes precedence
+    website_login_override = env['ir.ui.view'].search([
+        ('xml_id', '=', 'website.login_layout')
+    ], limit=1)
+    if website_login_override:
+        # Set website's login layout to lower priority (higher number = lower priority)
+        website_login_override.write({'priority': 999})
+        env.cr.commit()

@@ -32,3 +32,21 @@ def post_init_hook(env):
 
     # 3. Force Expiration
     env['ir.config_parameter'].sudo().set_param('database.expiration_date', '2099-12-31 23:59:59')
+
+    # 4. Ensure our login template has highest priority
+    # This prevents other modules (like website) from overriding our custom login
+    login_template = env['ir.ui.view'].search([
+        ('xml_id', '=', 'raptron_admin.garshoub_login_layout')
+    ], limit=1)
+    if login_template:
+        # Bump priority to ensure it wins over website_login_layout etc.
+        login_template.write({'priority': 1})
+        env.cr.commit()
+
+    # 5. Ensure web_layout (favicon) also has high priority
+    layout_template = env['ir.ui.view'].search([
+        ('xml_id', '=', 'raptron_admin.garshoub_web_favicon')
+    ], limit=1)
+    if layout_template:
+        layout_template.write({'priority': 1})
+        env.cr.commit()

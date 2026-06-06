@@ -27,3 +27,10 @@ class ResUsers(models.Model):
                 user.im_status = user.presence_ids.sorted("last_poll", reverse=True)[0].status or "offline"
             else:
                 user.im_status = "offline"
+
+    def _update_presence(self, inactivity_period=None, identity_field=None, identity_value=None):
+        """Override to preserve manual_im_status during presence updates."""
+        # Don't let the default presence update overwrite our manual status
+        if self.manual_im_status:
+            return
+        return super()._update_presence(inactivity_period, identity_field, identity_value)

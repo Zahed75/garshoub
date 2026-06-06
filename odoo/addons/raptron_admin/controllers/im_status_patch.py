@@ -1,7 +1,12 @@
 import logging
 from odoo import http, _
 from odoo.http import request
-from odoo.addons.mail.controllers.im_status import ImStatusController
+
+try:
+    from odoo.addons.mail.controllers.im_status import ImStatusController
+except ImportError:
+    # Fallback for Odoo 19 where the controller may be in a different location
+    ImStatusController = http.Controller
 
 _logger = logging.getLogger(__name__)
 

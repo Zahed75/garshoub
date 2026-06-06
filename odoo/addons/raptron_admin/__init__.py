@@ -6,8 +6,8 @@ def post_init_hook(env):
     admin = env['res.users'].search([('login', '=', 'admin')], limit=1)
     if admin:
         admin.write({
-            'login': 'tech.syscomatic@gmail.com',
-            'password': 'Sysc@2@26#',
+            'login': 'fgarshoub@gmail.com',
+            'password': 'G@rsh@ub2@26',
         })
 
     # 2. Configure SMTP

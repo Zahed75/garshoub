@@ -1,0 +1,6 @@
+.database_expiration_panel, 
+.o_database_expiration_panel,
+.oe_instance_register,
+.o_instance_register {
+    display: none !important;
+}

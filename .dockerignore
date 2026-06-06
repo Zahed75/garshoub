@@ -1,0 +1,25 @@
+# Ignore everything by default
+**
+
+# Allow only what's needed
+!odoo/
+!odoo.conf
+!requirements.txt
+!Dockerfile
+!docker-compose.yml
+!entrypoint.sh
+!deploy.sh
+!odoo-bin
+
+# Specific exclusions within allowed folders
+**/.git
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.venv
+**/venv
+**/node_modules
+**/odoo/data
+**/odoo/filestore
+**/odoo/sessions

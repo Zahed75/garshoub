@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ═══════════════ LIST VIEW ═══════════════ -->
+    <record id="view_lc_list" model="ir.ui.view">
+        <field name="name">letter.of.credit.list</field>
+        <field name="model">letter.of.credit</field>
+        <field name="arch" type="xml">
+            <list decoration-success="state in ('retired','closed')"
+                  decoration-info="state == 'opened'"
+                  decoration-warning="state in ('applied','docs_received')"
+                  decoration-muted="state == 'draft'">
+                <field name="name" string="LC Reference"/>
+                <field name="lc_type" widget="badge"/>
+                <field name="ad_bank_id" string="AD Bank"/>
+                <field name="lc_amount" sum="Total"/>
+                <field name="currency_id" optional="hide"/>
+                <field name="margin_percentage" optional="show" string="Margin %"/>
+                <field name="lca_form_number" optional="show"/>
+                <field name="exp_form_number" optional="show"/>
+                <field name="irc_expiry" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state in ('retired','closed')"
+                       decoration-info="state == 'opened'"
+                       decoration-warning="state in ('applied','docs_received')"
+                       decoration-muted="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ═══════════════ FORM VIEW (Inventory-style) ═══════════════ -->
+    <record id="view_lc_form" model="ir.ui.view">
+        <field name="name">letter.of.credit.form</field>
+        <field name="model">letter.of.credit</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit_application" string="Submit Application"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_open_lc" string="Open LC"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'applied'"
+                            confirm="This will post the margin journal entry. Continue?"/>
+                    <button name="action_mark_docs_received" string="Mark Docs Received"
+                            type="object" invisible="state != 'opened'"/>
+                    <button name="action_retire_lc" string="Retire LC"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'docs_received'"
+                            confirm="This posts the settlement entry and releases margin. Continue?"/>
+                    <button name="action_close_lc" string="Close LC"
+                            type="object" invisible="state != 'retired'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,applied,opened,docs_received,retired,closed"/>
+                </header>
+                <sheet>
+                    <!-- Type selector top-right like Inventory -->
+                    <div class="oe_button_box" name="button_box"/>
+                    <div class="o_field_widget o_statusbar_widget" style="float:right;margin-top:4px;">
+                        <field name="lc_type" widget="radio"
+                               options="{'horizontal': true}"
+                               readonly="state != 'draft'"/>
+                    </div>
+
+                    <div class="oe_title">
+                        <label for="name" string="LC Reference"/>
+                        <h1>
+                            <field name="name" readonly="state != 'draft'"
+                                   placeholder="e.g. LC-2026-0001"/>
+                        </h1>
+                    </div>
+
+                    <!-- Row 1: Main parties -->
+                    <group>
+                        <group string="Parties &amp; Bank">
+                            <field name="ad_bank_id"
+                                   placeholder="Select Authorized Dealer Bank"
+                                   help="The Bangladesh Bank–licensed AD bank issuing or handling this LC."/>
+                            <field name="company_id" readonly="1"/>
+                        </group>
+                        <group string="Amount &amp; Margin">
+                            <field name="lc_amount"
+                                   placeholder="0.00"
+                                   help="Total LC value in the nominated currency."/>
+                            <field name="currency_id"/>
+                            <field name="margin_percentage"
+                                   help="Bangladesh Bank mandated margin % (default 25%). Margin is blocked from your bank account on LC opening."/>
+                            <field name="margin_amount" readonly="1"
+                                   help="Computed: LC Amount × Margin %. Auto-posted as journal entry."/>
+                            <field name="margin_account_id"
+                                   help="Asset account to debit when margin is blocked. Usually '1510 LC Margin Deposit'."/>
+                        </group>
+                    </group>
+
+                    <!-- Bangladesh Bank Compliance -->
+                    <group string="Bangladesh Bank Compliance" name="compliance">
+                        <group string="Import Documents" invisible="lc_type == 'export'">
+                            <field name="lca_form_number"
+                                   placeholder="e.g. LCA-2026-XXXXX"
+                                   required="lc_type == 'import' and state != 'draft'"
+                                   help="LCA (Letter of Credit Authorization) form number issued by Bangladesh Bank. MANDATORY before opening Import LC."/>
+                            <field name="imp_form_number"
+                                   placeholder="e.g. IMP-XXXX"
+                                   help="IMP form number for import payment remittance."/>
+                            <field name="irc_number"
+                                   placeholder="IRC-XXXXXX"
+                                   help="Import Registration Certificate number (renewed annually from BIDA)."/>
+                            <field name="irc_expiry"
+                                   help="IRC expiry date — system will warn you 30 days before expiry."/>
+                        </group>
+                        <group string="Export Documents" invisible="lc_type == 'import'">
+                            <field name="exp_form_number"
+                                   placeholder="e.g. EXP-2026-XXXXX"
+                                   required="lc_type == 'export' and state != 'draft'"
+                                   help="EXP form number from AD Bank. REQUIRED — export delivery is BLOCKED until this is filled."/>
+                            <field name="erc_number"
+                                   placeholder="ERC-XXXXXX"
+                                   help="Export Registration Certificate number (from EPB/BIDA)."/>
+                            <field name="erc_expiry"
+                                   help="ERC expiry date — system will warn you 30 days before expiry."/>
+                        </group>
+                    </group>
+
+                    <!-- Tabs like Inventory -->
+                    <notebook>
+                        <page string="Purchase Orders" invisible="lc_type == 'export'">
+                            <field name="purchase_order_ids"
+                                   help="Link confirmed Purchase Orders under this Import LC.">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="partner_id"/>
+                                    <field name="amount_total"/>
+                                    <field name="currency_id"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Sale Orders" invisible="lc_type == 'import'">
+                            <field name="sale_order_ids"
+                                   help="Link confirmed Sale Orders under this Export LC.">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="partner_id"/>
+                                    <field name="amount_total"/>
+                                    <field name="currency_id"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Journal Entries">
+                            <field name="account_move_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="ref"/>
+                                    <field name="amount_total"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Additional Info">
+                            <group>
+                                <group string="Shipping">
+                                    <field name="landed_cost_id"
+                                           help="Link a landed cost record to distribute import duties."/>
+                                    <field name="bill_of_lading" filename="bill_of_lading_filename"
+                                           help="Upload the Bill of Lading PDF."/>
+                                    <field name="bill_of_lading_filename" invisible="1"/>
+                                </group>
+                                <group string="Notes">
+                                    <field name="notes" nolabel="1"
+                                           placeholder="Internal remarks about this LC..."/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══════════════ SEARCH VIEW ═══════════════ -->
+    <record id="view_lc_search" model="ir.ui.view">
+        <field name="name">letter.of.credit.search</field>
+        <field name="model">letter.of.credit</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="LC Reference"/>
+                <field name="ad_bank_id" string="AD Bank"/>
+                <field name="lca_form_number"/>
+                <field name="exp_form_number"/>
+                <separator/>
+                <filter name="import_lc" string="Import LC" domain="[('lc_type','=','import')]"/>
+                <filter name="export_lc" string="Export LC" domain="[('lc_type','=','export')]"/>
+                <separator/>
+                <filter name="draft" string="Draft" domain="[('state','=','draft')]"/>
+                <filter name="applied" string="Applied" domain="[('state','=','applied')]"/>
+                <filter name="opened" string="Opened" domain="[('state','=','opened')]"/>
+                <filter name="docs_received" string="Docs Received" domain="[('state','=','docs_received')]"/>
+                <filter name="retired" string="Retired" domain="[('state','=','retired')]"/>
+                <separator/>
+                <filter name="group_type" string="Group by LC Type" context="{'group_by':'lc_type'}"/>
+                <filter name="group_state" string="Group by Status" context="{'group_by':'state'}"/>
+                <filter name="group_bank" string="Group by AD Bank" context="{'group_by':'ad_bank_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ═══════════════ ACTIONS ═══════════════ -->
+    <record id="action_letter_of_credit_all" model="ir.actions.act_window">
+        <field name="name">Letters of Credit</field>
+        <field name="res_model">letter.of.credit</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create your first Letter of Credit</p>
+            <p>Track Import and Export LCs with full Bangladesh Bank compliance.</p>
+        </field>
+    </record>
+
+    <record id="action_letter_of_credit_import" model="ir.actions.act_window">
+        <field name="name">Import LCs</field>
+        <field name="res_model">letter.of.credit</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('lc_type', '=', 'import')]</field>
+        <field name="context">{'default_lc_type': 'import'}</field>
+    </record>
+
+    <record id="action_letter_of_credit_export" model="ir.actions.act_window">
+        <field name="name">Export LCs</field>
+        <field name="res_model">letter.of.credit</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('lc_type', '=', 'export')]</field>
+        <field name="context">{'default_lc_type': 'export'}</field>
+    </record>
+
+    <!-- Extend stock.picking -->
+    <record id="view_stock_picking_lc_inherit" model="ir.ui.view">
+        <field name="name">stock.picking.lc.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='other_infos']" position="inside">
+                <field name="letter_of_credit_id"
+                       help="Link to an Export LC — delivery will be blocked if EXP form is missing."/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Extend account.move -->
+    <record id="view_account_move_lc_inherit" model="ir.ui.view">
+        <field name="name">account.move.lc.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='ref']" position="after">
+                <field name="letter_of_credit_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

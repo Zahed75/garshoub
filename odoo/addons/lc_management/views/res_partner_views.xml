@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extend res.partner form to show AD Bank and NBR flags -->
+    <record id="view_res_partner_lc_inherit" model="ir.ui.view">
+        <field name="name">res.partner.lc.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='website']" position="after">
+                <separator string="Bangladesh Trade Finance"/>
+                <field name="is_ad_bank"/>
+                <field name="is_nbr"/>
+                <field name="bd_bank_branch" invisible="not is_ad_bank"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

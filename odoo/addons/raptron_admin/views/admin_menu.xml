@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_raptron_root"
+              name="Raptron Admin"
+              sequence="1"
+              web_icon="raptron_admin,static/description/icon.png"/>
+
+    <menuitem id="menu_raptron_registrations"
+              name="Client Registrations"
+              parent="menu_raptron_root"
+              action="raptron_admin.action_saas_registrations"
+              sequence="10"/>
+</odoo>

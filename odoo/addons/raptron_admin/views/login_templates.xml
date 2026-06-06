@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="sysco_login_layout"
+              inherit_id="web.login_layout"
+              name="Sysco Modern Login"
+              priority="99">
+
+        <xpath expr="t" position="replace">
+            <t t-call="web.frontend_layout">
+                <t t-set="no_header" t-value="True"/>
+                <t t-set="no_footer" t-value="True"/>
+                <t t-set="body_classname" t-value="'o_web_login'"/>
+
+                <link rel="stylesheet" href="/raptron_admin/static/src/css/login_style.css"/>
+
+                <div class="sysco-auth-wrapper">
+                    <div class="sysco-auth-left d-none d-lg-flex">
+                        <div class="sysco-overlay"></div>
+                        <div class="sysco-brand">
+                            <img src="/raptron_admin/static/src/img/sysco_logo_white.png" alt="Syscomatic"/>
+                        </div>
+                        <div class="sysco-content">
+                            <span class="sysco-badge">Internal Management System</span>
+                            <h1>Welcome to <br/> Syscomatic HQ</h1>
+                            <p>Manage operations, teams, reports and workflows from one centralized platform.</p>
+                        </div>
+                    </div>
+
+                    <div class="sysco-auth-right">
+                        <div class="sysco-login-card">
+                            <!-- Logo at top of login card -->
+                            <div class="sysco-login-logo">
+                                <img src="/raptron_admin/static/src/img/logo.png" alt="Syscomatic"/>
+                            </div>
+
+                            <h2>Login to your account</h2>
+                            <p class="sysco-subtitle">Please enter your credentials to continue</p>
+                            
+                            <t t-if="message">
+                                <div class="alert alert-danger" role="alert">
+                                    <t t-out="message"/>
+                                </div>
+                            </t>
+                            
+                            <div class="sysco-form-container">
+                                <t t-out="0"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+
+    </template>
+
+</odoo>

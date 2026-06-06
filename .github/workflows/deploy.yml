@@ -1,0 +1,155 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - development
+      - staging
+      - production
+  pull_request:
+    branches:
+      - development
+      - staging
+      - production
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: sysco-odoo:latest
+
+      - name: Validate Odoo Configuration
+        run: |
+          # Basic syntax checks
+          python3 -c "import configparser; c = configparser.ConfigParser(); c.read('odoo.conf')"
+          echo "Odoo configuration is valid"
+
+  deploy-staging:
+    name: Deploy to Staging (hq.flowllet.com)
+    needs: build-and-test
+    if: github.ref == 'refs/heads/staging'
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://hq.flowllet.com
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Staging Server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.DEV_SSH_HOST }}
+          username: ${{ secrets.DEV_SSH_USER }}
+          key: ${{ secrets.DEV_SSH_KEY }}
+          command_timeout: 15m
+          script: |
+            set -e
+            echo "========================================="
+            echo "Deploying to Staging Server..."
+            echo "========================================="
+            
+            cd /www/wwwroot/sysco-19.0
+            
+            # Backup database before deployment
+            echo "Creating pre-deployment backup..."
+            docker compose exec -T db pg_dump -U ${{ secrets.DEV_DB_USER || 'odoo' }} -d ${{ secrets.DEV_DB_NAME || 'flowllet' }} > ./backups/pre_deploy_$(date +%Y%m%d_%H%M%S).sql || true
+            
+            # Pull latest code from staging branch
+            git fetch origin
+            git reset --hard origin/staging
+            
+            # Rebuild and restart containers
+            docker compose up -d --build
+            
+            # Clean up old images
+            docker image prune -f
+            
+            echo "Staging deployment completed!"
+
+  deploy-production:
+    name: Deploy to Production (hq.syscomatic.com)
+    needs: build-and-test
+    if: github.ref == 'refs/heads/production'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://hq.syscomatic.com
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Production Server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PROD_SSH_HOST }}
+          username: ${{ secrets.PROD_SSH_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          command_timeout: 15m
+          script: |
+            set -x
+            echo "========================================="
+            echo "Deploying to Production Server..."
+            echo "========================================="
+            
+            cd /www/wwwroot/sysco-19.0
+            
+            # Older Docker API on production server
+            export DOCKER_API_VERSION=1.41
+            
+            # Detect docker compose command (v1 or v2)
+            if command -v docker-compose &> /dev/null; then
+              DC="docker-compose"
+            else
+              DC="docker compose"
+            fi
+            echo "Using docker command: $DC"
+            
+            # Backup database before deployment (only if db container is running)
+            echo "Creating pre-deployment backup..."
+            if $DC ps | grep -q "odoo_postgres"; then
+              $DC exec -T db pg_dump -U ${{ secrets.PROD_DB_USER || 'odoo' }} -d ${{ secrets.PROD_DB_NAME || 'odoo' }} > ./backups/pre_deploy_$(date +%Y%m%d_%H%M%S).sql || echo "Backup failed, continuing..."
+            else
+              echo "DB container not running, skipping backup..."
+            fi
+            
+            # Pull latest code from production branch
+            git fetch origin
+            git reset --hard origin/production
+            
+            # Stop existing containers first to free resources
+            echo "Stopping existing containers..."
+            $DC down || echo "No existing containers to stop"
+            
+            # Build first (so build errors are visible), then start
+            echo "Building containers..."
+            $DC build --no-cache
+            
+            echo "Starting containers..."
+            $DC up -d
+            
+            # Wait a moment for containers to initialize
+            sleep 10
+            
+            # Check container status
+            echo "Container status:"
+            $DC ps
+            
+            # Clean up old images (non-fatal)
+            docker image prune -f || echo "Image prune skipped"
+            
+            echo "========================================="
+            echo "Production deployment completed!"
+            echo "========================================="

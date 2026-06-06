@@ -1,0 +1,21 @@
+/* Aggressively hide all Odoo Enterprise subscription/expiration banners */
+.database_expiration_panel,
+.o_database_expiration_panel,
+.o_subscription_warning,
+.o_notification_manager .o_notification:has(.o_notification_title:contains("subscription")),
+.o_notification_manager .o_notification:has(.o_notification_content:contains("expire")),
+.o_notification_manager .o_notification:has(.o_notification_content:contains("subscription")),
+div[class*="o_subscription"],
+div[class*="expiration"],
+.alert-info:has(a[href*="odoo.com/buy"]),
+.alert-warning:has(a[href*="odoo.com/register"]),
+.o_panel_expiration,
+.o_expiration_panel {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}

@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: odoo_postgres
+    environment:
+      - POSTGRES_DB=${DB_NAME:-flowllet}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-Sysc@2@26#}
+      - POSTGRES_USER=${DB_USER:-odoo}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data/pgdata
+    restart: unless-stopped
+    networks:
+      - odoo-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-odoo}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  odoo:
+    build: .
+    container_name: odoo_app
+    depends_on:
+      - db
+    ports:
+      - "${ODOO_PORT:-8069}:8069"
+      - "8072:8072"
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+      - odoo-logs:/var/log/odoo
+      - ./odoo.conf:/opt/odoo/odoo.conf:ro
+    environment:
+      - DB_HOST=db
+      - DB_USER=${DB_USER:-odoo}
+      - DB_PASSWORD=${DB_PASSWORD:-Sysc@2@26#}
+      - DB_NAME=${DB_NAME:-flowllet}
+      - DB_PORT=5432
+    restart: unless-stopped
+    networks:
+      - odoo-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8069/web/login" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  backup:
+    image: postgres:15
+    container_name: odoo_backup
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=${DB_USER:-odoo}
+      - DB_PASSWORD=${DB_PASSWORD:-Sysc@2@26#}
+      - DB_NAME=${DB_NAME:-flowllet}
+    volumes:
+      - ./backups:/backups
+    entrypoint: |
+      sh -c '
+      while true; do
+        echo "Creating backup..."
+        pg_dump -h db -U $${DB_USER} -d $${DB_NAME} > /backups/$${DB_NAME}_backup_$$(date +%%Y%%m%%d_%%H%%M%%S).sql
+        echo "Backup completed. Cleaning old backups..."
+        ls -t /backups/*.sql | tail -n +8 | xargs rm -f 2>/dev/null || true
+        echo "Sleeping for 24 hours..."
+        sleep 86400
+      done
+      '
+    restart: unless-stopped
+    networks:
+      - odoo-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+volumes:
+  odoo-db-data:
+  odoo-web-data:
+  odoo-logs:
+
+networks:
+  odoo-network:
+    driver: bridge

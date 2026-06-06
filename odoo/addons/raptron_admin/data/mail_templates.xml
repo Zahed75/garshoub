@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="email_template_saas_onboarding" model="mail.template">
+            <field name="name">Raptron ERP — Client Onboarding Credentials</field>
+            <field name="model_id" ref="raptron_admin.model_saas_registration"/>
+            <field name="subject">Your Raptron ERP workspace is ready — Login credentials inside</field>
+            <field name="email_from">tech.syscomatic@gmail.com</field>
+            <field name="email_to">{{ object.email }}</field>
+            <field name="body_html"><![CDATA[
+<div style="font-family:'Segoe UI',Arial,sans-serif;max-width:620px;margin:auto;background:#f8f9fa;padding:24px;">
+  <div style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#714b67,#c0748f);padding:36px 32px;text-align:center;">
+      <div style="font-size:36px;margin-bottom:8px;">🎉</div>
+      <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;">Your Workspace is Ready!</h1>
+      <p style="color:rgba(255,255,255,.85);margin:8px 0 0;font-size:14px;">Raptron ERP — Enterprise Resource Planning</p>
+    </div>
+
+    <!-- Body -->
+    <div style="padding:32px;">
+      <p style="color:#374151;font-size:15px;margin:0 0 20px;">Dear <strong>{{ object.contact_name }}</strong>,</p>
+      <p style="color:#6b7280;font-size:14px;line-height:1.6;margin:0 0 24px;">
+        Your company workspace for <strong>{{ object.name }}</strong> has been provisioned on Raptron ERP.
+        Below are your login credentials and quick-start steps.
+      </p>
+
+      <!-- Credentials box -->
+      <div style="background:#f3f0ff;border:1px solid #d8b4fe;border-radius:10px;padding:20px 24px;margin-bottom:24px;">
+        <h3 style="color:#714b67;margin:0 0 14px;font-size:15px;">🔐 Your Login Credentials</h3>
+        <table style="width:100%;border-collapse:collapse;">
+          <tr>
+            <td style="padding:6px 0;color:#6b7280;font-size:13px;width:110px;">🌐 URL</td>
+            <td style="padding:6px 0;font-size:13px;"><a href="https://{{ object.subdomain }}" style="color:#714b67;font-weight:600;">https://{{ object.subdomain }}</a></td>
+          </tr>
+          <tr>
+            <td style="padding:6px 0;color:#6b7280;font-size:13px;">👤 Username</td>
+            <td style="padding:6px 0;font-size:13px;font-weight:600;">admin</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 0;color:#6b7280;font-size:13px;">🔑 Password</td>
+            <td style="padding:6px 0;"><code style="background:#fff;border:1px solid #e0d0f0;padding:3px 10px;border-radius:5px;font-size:13px;color:#7c3aed;letter-spacing:.05em;">{{ object.admin_password }}</code></td>
+          </tr>
+          <tr>
+            <td style="padding:6px 0;color:#6b7280;font-size:13px;">🗄️ Database</td>
+            <td style="padding:6px 0;font-size:13px;"><code style="font-size:12px;color:#6b7280;">{{ object.db_name }}</code></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Steps -->
+      <h3 style="color:#1f2937;font-size:15px;margin:0 0 14px;">📋 Getting Started — 4 Quick Steps</h3>
+      <div style="counter-reset:step;">
+        <div style="display:flex;gap:12px;margin-bottom:12px;align-items:flex-start;">
+          <div style="min-width:28px;height:28px;background:#714b67;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;">1</div>
+          <div>
+            <strong style="font-size:13px;color:#1f2937;">Visit your ERP URL</strong>
+            <p style="margin:2px 0 0;font-size:12px;color:#6b7280;">Go to <a href="https://{{ object.subdomain }}" style="color:#714b67;">https://{{ object.subdomain }}</a></p>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;margin-bottom:12px;align-items:flex-start;">
+          <div style="min-width:28px;height:28px;background:#714b67;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;">2</div>
+          <div>
+            <strong style="font-size:13px;color:#1f2937;">Log in with credentials above</strong>
+            <p style="margin:2px 0 0;font-size:12px;color:#6b7280;">Use username <code>admin</code> and the password shown above</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;margin-bottom:12px;align-items:flex-start;">
+          <div style="min-width:28px;height:28px;background:#714b67;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;">3</div>
+          <div>
+            <strong style="font-size:13px;color:#1f2937;">Change your password immediately</strong>
+            <p style="margin:2px 0 0;font-size:12px;color:#6b7280;">Settings → My Profile → Change Password</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="min-width:28px;height:28px;background:#714b67;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;">4</div>
+          <div>
+            <strong style="font-size:13px;color:#1f2937;">Set up your company</strong>
+            <p style="margin:2px 0 0;font-size:12px;color:#6b7280;">Settings → General Settings → Company Information</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div style="text-align:center;margin:28px 0 8px;">
+        <a href="https://{{ object.subdomain }}"
+           style="background:#714b67;color:#fff;padding:13px 36px;border-radius:7px;text-decoration:none;font-size:15px;font-weight:700;display:inline-block;">
+          Launch My ERP →
+        </a>
+      </div>
+
+      <p style="color:#ef4444;font-size:12px;text-align:center;margin:16px 0 0;">
+        ⚠️ Keep these credentials secure. Change your password on first login.
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div style="padding:16px 32px;background:#fafafa;border-top:1px solid #f0f0f0;text-align:center;">
+      <p style="color:#9ca3af;font-size:11px;margin:0;">
+        Raptron ERP — Powered by Odoo 19 &nbsp;|&nbsp;
+        <a href="https://raptron.com" style="color:#714b67;text-decoration:none;">raptron.com</a> &nbsp;|&nbsp;
+        Support: <a href="mailto:support@raptron.com" style="color:#714b67;text-decoration:none;">support@raptron.com</a>
+      </p>
+    </div>
+  </div>
+</div>
+            ]]></field>
+        </record>
+    </data>
+</odoo>

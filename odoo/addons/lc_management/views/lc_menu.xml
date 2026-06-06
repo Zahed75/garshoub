@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_lc_root"
+              name="LC Management"
+              sequence="30"
+              web_icon="lc_management,static/description/icon.png"/>
+
+    <menuitem id="menu_lc_all"
+              name="All Letters of Credit"
+              parent="menu_lc_root"
+              action="lc_management.action_letter_of_credit_all"
+              sequence="10"/>
+
+    <menuitem id="menu_lc_import"
+              name="Import LCs"
+              parent="menu_lc_root"
+              action="lc_management.action_letter_of_credit_import"
+              sequence="20"/>
+
+    <menuitem id="menu_lc_export"
+              name="Export LCs"
+              parent="menu_lc_root"
+              action="lc_management.action_letter_of_credit_export"
+              sequence="30"/>
+</odoo>

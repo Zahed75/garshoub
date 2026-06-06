@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ═══════════════════════════ LIST VIEW ═══════════════════════════ -->
+    <record id="view_saas_registration_list" model="ir.ui.view">
+        <field name="name">saas.registration.list</field>
+        <field name="model">saas.registration</field>
+        <field name="arch" type="xml">
+            <list decoration-success="state == 'approved'"
+                  decoration-warning="state == 'pending'"
+                  decoration-muted="state in ('cancelled', 'suspended')">
+                <field name="name"/>
+                <field name="contact_name"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="company_size"/>
+                <field name="subdomain"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-warning="state == 'pending'"
+                       decoration-danger="state in ('cancelled', 'suspended')"/>
+                <field name="approved_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════ FORM VIEW ═══════════════════════════ -->
+    <record id="view_saas_registration_form" model="ir.ui.view">
+        <field name="name">saas.registration.form</field>
+        <field name="model">saas.registration</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit" string="Submit for Review"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_approve" string="✅ Approve &amp; Provision"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'pending'"
+                            confirm="This will create a new PostgreSQL database. Continue?"/>
+                    <button name="action_suspend" string="⚠️ Suspend"
+                            type="object"
+                            invisible="state != 'approved'"/>
+                    <button name="action_reactivate" string="🔄 Reactivate"
+                            type="object"
+                            invisible="state != 'suspended'"/>
+                    <button name="action_cancel" string="Cancel"
+                            type="object"
+                            invisible="state in ('cancelled', 'approved')"/>
+                    <button name="action_delete_database" string="🗑️ Delete Database"
+                            type="object" class="btn-danger"
+                            invisible="state not in ('approved', 'suspended')"
+                            confirm="This will permanently DROP the client database. Are you sure?"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="pending,approved,suspended"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Company Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Contact Information">
+                            <field name="contact_name"/>
+                            <field name="email"/>
+                            <field name="phone"/>
+                            <field name="country_id"/>
+                        </group>
+                        <group string="Company Details">
+                            <field name="company_size"/>
+                            <field name="language"/>
+                            <field name="primary_interest"/>
+                        </group>
+                    </group>
+                    <group string="Provisioning Details" invisible="state == 'draft'">
+                        <group>
+                            <field name="db_name"/>
+                            <field name="subdomain"/>
+                            <field name="admin_password" password="True"/>
+                        </group>
+                        <group>
+                            <field name="approved_date"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════ KANBAN VIEW ══════════════════════════ -->
+    <record id="view_saas_registration_kanban" model="ir.ui.view">
+        <field name="name">saas.registration.kanban</field>
+        <field name="model">saas.registration</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="contact_name"/>
+                <field name="email"/>
+                <field name="state"/>
+                <field name="subdomain"/>
+                <field name="approved_date"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_record_headings">
+                                <strong class="o_kanban_record_title">
+                                    <field name="name"/>
+                                </strong>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div><i class="fa fa-user" title="Contact"/> <field name="contact_name"/></div>
+                                <div><i class="fa fa-envelope" title="Email"/> <field name="email"/></div>
+                                <div t-if="record.subdomain.value">
+                                    <i class="fa fa-globe" title="Subdomain"/> <field name="subdomain"/>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <field name="state" widget="badge"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════ SEARCH VIEW ══════════════════════════ -->
+    <record id="view_saas_registration_search" model="ir.ui.view">
+        <field name="name">saas.registration.search</field>
+        <field name="model">saas.registration</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Company"/>
+                <field name="email"/>
+                <field name="contact_name"/>
+                <separator/>
+                <filter name="pending" string="Pending" domain="[('state','=','pending')]"/>
+                <filter name="approved" string="Approved" domain="[('state','=','approved')]"/>
+                <filter name="suspended" string="Suspended" domain="[('state','=','suspended')]"/>
+                <separator/>
+                <filter name="group_state" string="Group by Status" context="{'group_by':'state'}"/>
+                <filter name="group_size" string="Group by Company Size" context="{'group_by':'company_size'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════ DELETE WIZARD ════════════════════════ -->
+    <record id="view_saas_delete_wizard_form" model="ir.ui.view">
+        <field name="name">saas.registration.delete.wizard.form</field>
+        <field name="model">saas.registration.delete.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="alert alert-danger" role="alert">
+                        <strong>⚠️ PERMANENT ACTION — This cannot be undone!</strong>
+                    </div>
+                    <group>
+                        <field name="registration_id" readonly="1"/>
+                        <field name="confirm_name"
+                               placeholder="Type the exact database name to confirm"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_confirm_delete" string="Permanently Delete Database"
+                            type="object" class="btn-danger"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════ ACTIONS ══════════════════════════════ -->
+    <record id="action_saas_registrations" model="ir.actions.act_window">
+        <field name="name">Client Registrations</field>
+        <field name="res_model">saas.registration</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_pending': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No registration requests yet!
+            </p>
+            <p>New client registration requests will appear here.</p>
+        </field>
+    </record>
+
+
+
+    <!-- ═══ PUBLIC REGISTRATION FORM — Clean White Minimal ═══ -->
+    <template id="portal_registration_form">
+        <t t-call="web.layout">
+            <t t-set="title">Get Started — Raptron ERP</t>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+                *{box-sizing:border-box;margin:0;padding:0;}
+                body{font-family:'Inter',sans-serif;background:#f5f5f7;min-height:100vh;display:flex;flex-direction:column;}
+                .pg-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:32px 16px;}
+                .card{background:#fff;border-radius:16px;padding:40px 48px;max-width:540px;width:100%;box-shadow:0 2px 24px rgba(0,0,0,.08);}
+                .brand{text-align:center;margin-bottom:28px;}
+                .brand-logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#714b67,#c0748f);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:22px;margin-bottom:12px;}
+                .brand h1{font-size:22px;font-weight:700;color:#1a1a1a;margin-bottom:4px;}
+                .brand p{color:#888;font-size:14px;}
+                .alert{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;}
+                .alert-err{background:#fff0f0;color:#c0392b;border:1px solid #fdd;}
+                .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+                .fg{margin-bottom:16px;}
+                label{display:block;font-size:12.5px;font-weight:600;color:#444;margin-bottom:5px;}
+                input,select{width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:9px 12px;font-size:13.5px;color:#1a1a1a;background:#fff;transition:border .15s,box-shadow .15s;font-family:inherit;}
+                input:focus,select:focus{outline:none;border-color:#714b67;box-shadow:0 0 0 3px rgba(113,75,103,.1);}
+                input::placeholder{color:#bbb;}
+                .btn-submit{width:100%;background:#714b67;color:#fff;border:none;border-radius:9px;padding:13px;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;font-family:inherit;transition:background .15s;}
+                .btn-submit:hover{background:#5d3a55;}
+                .footer-note{text-align:center;font-size:12px;color:#aaa;margin-top:16px;}
+                .footer-note a{color:#714b67;text-decoration:none;}
+                .pg-footer{padding:16px;text-align:center;color:#bbb;font-size:11px;}
+            </style>
+            <div class="pg-wrap">
+                <div class="card">
+                    <div class="brand">
+                        <div class="brand-logo">R</div>
+                        <h1>Raptron ERP</h1>
+                        <p>Request your company workspace — free trial, no credit card</p>
+                    </div>
+
+                    <t t-if="error == 'email_exists'">
+                        <div class="alert alert-err">⚠️ This email is already registered. <a href="mailto:support@raptron.com">Contact support</a></div>
+                    </t>
+                    <t t-if="error == 'missing_fields'">
+                        <div class="alert alert-err">⚠️ Please fill in all required fields.</div>
+                    </t>
+                    <t t-if="error == 'server_error'">
+                        <div class="alert alert-err">⚠️ Something went wrong. Please try again.</div>
+                    </t>
+
+                    <form action="/register" method="POST">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="form-row">
+                            <div class="fg">
+                                <label>Full Name *</label>
+                                <input name="contact_name" required="required" placeholder="Your full name"/>
+                            </div>
+                            <div class="fg">
+                                <label>Company Name *</label>
+                                <input name="name" required="required" placeholder="Company Ltd."/>
+                            </div>
+                        </div>
+                        <div class="fg">
+                            <label>Work Email *</label>
+                            <input name="email" type="email" required="required" placeholder="you@company.com"/>
+                        </div>
+                        <div class="form-row">
+                            <div class="fg">
+                                <label>Phone *</label>
+                                <input name="phone" required="required" value="+880"/>
+                            </div>
+                            <div class="fg">
+                                <label>Company Size</label>
+                                <select name="company_size">
+                                    <option value="">Select...</option>
+                                    <option value="1-5">1–5 employees</option>
+                                    <option value="6-20">6–20 employees</option>
+                                    <option value="21-100">21–100 employees</option>
+                                    <option value="100+">100+ employees</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="fg">
+                                <label>Country</label>
+                                <select name="country_id">
+                                    <option value="">Select country...</option>
+                                    <t t-foreach="countries" t-as="c">
+                                        <option t-att-value="c.id" t-att-selected="'selected' if c.code == 'BD' else False">
+                                            <t t-out="c.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="fg">
+                                <label>Primary Interest</label>
+                                <input name="primary_interest" placeholder="e.g. LC Management"/>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit">Request My Workspace →</button>
+                    </form>
+                    <p class="footer-note">By submitting you agree to our <a href="#">Terms of Service</a></p>
+                </div>
+            </div>
+            <div class="pg-footer">© 2026 Raptron ERP — Powered by Odoo 19</div>
+        </t>
+    </template>
+
+    <!-- ═══ THANK YOU PAGE ═══ -->
+    <template id="portal_thank_you">
+        <t t-call="web.layout">
+            <t t-set="title">Request Received — Raptron ERP</t>
+            <style>
+                body{font-family:'Inter',sans-serif;background:#f5f5f7;min-height:100vh;display:flex;align-items:center;justify-content:center;}
+                .card{background:#fff;border-radius:16px;padding:48px;max-width:440px;width:100%;box-shadow:0 2px 24px rgba(0,0,0,.08);text-align:center;}
+                .icon{font-size:56px;margin-bottom:16px;}
+                h2{font-size:22px;font-weight:700;color:#1a1a1a;margin:0 0 12px;}
+                p{color:#6b7280;font-size:14px;line-height:1.7;margin:0 0 24px;}
+                a.btn{display:inline-block;background:#714b67;color:#fff;padding:11px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;}
+            </style>
+            <div class="card">
+                <div class="icon">🎉</div>
+                <h2>Request Received!</h2>
+                <p>Thank you for registering with <strong>Raptron ERP</strong>.<br/>
+                Our team will review your request and send your login credentials within <strong>24 hours</strong>.</p>
+                <a class="btn" href="/">← Submit Another</a>
+            </div>
+        </t>
+    </template>
+
+    <!-- ═══ ADMIN DASHBOARD — Raptron ERP Admin ═══ -->
+    <template id="admin_dashboard_template">
+        <t t-call="web.layout">
+            <t t-set="title">Raptron ERP Admin</t>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+                *{box-sizing:border-box;}
+                body{font-family:'Inter',sans-serif;background:#f3f4f7;margin:0;color:#1a1a1a;}
+                .nav{background:#fff;border-bottom:1px solid #e8e8e8;padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+                .nav-brand{display:flex;align-items:center;gap:10px;}
+                .nav-logo{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,#714b67,#c0748f);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;}
+                .nav-title{font-size:15px;font-weight:700;color:#1a1a1a;}
+                .nav-links{display:flex;gap:4px;align-items:center;}
+                .nav-links a{padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;color:#555;text-decoration:none;}
+                .nav-links a:hover{background:#f5f0ff;color:#714b67;}
+                .nav-links a.active{background:#f0ebf7;color:#714b67;font-weight:600;}
+                .nav-links a.out{color:#c0392b;}
+                .nav-links a.out:hover{background:#fdf2f2;}
+                .page{max-width:1180px;margin:0 auto;padding:28px 24px;}
+                .page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+                .page-head h1{font-size:22px;font-weight:700;margin:0;}
+                .page-head p{color:#888;font-size:13px;margin:4px 0 0;}
+                .btn-new{background:#714b67;color:#fff;border:none;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+                .btn-new:hover{background:#5d3a55;}
+                .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+                .stat{background:#fff;border:1px solid #eee;border-radius:10px;padding:20px;display:flex;align-items:center;gap:14px;transition:box-shadow .15s;}
+                .stat:hover{box-shadow:0 4px 14px rgba(0,0,0,.07);}
+                .stat-ic{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+                .ic1{background:#f3f0ff;} .ic2{background:#fff8e6;} .ic3{background:#edfaf2;} .ic4{background:#fdecea;}
+                .stat-num{font-size:26px;font-weight:700;}
+                .stat-lbl{font-size:11px;color:#999;margin-top:2px;}
+                .c1{color:#714b67;} .c2{color:#d97706;} .c3{color:#16a34a;} .c4{color:#dc2626;}
+                .card{background:#fff;border:1px solid #eee;border-radius:10px;margin-bottom:20px;overflow:hidden;}
+                .card-head{padding:14px 20px;border-bottom:1px solid #f5f5f5;display:flex;align-items:center;justify-content:space-between;}
+                .card-head h2{font-size:14px;font-weight:600;margin:0;}
+                .card-head a{font-size:12px;color:#714b67;text-decoration:none;font-weight:500;}
+                table{width:100%;border-collapse:collapse;}
+                th{padding:9px 16px;text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#aaa;background:#fafafa;border-bottom:1px solid #f0f0f0;font-weight:600;}
+                td{padding:11px 16px;font-size:13px;color:#444;border-bottom:1px solid #f8f8f8;vertical-align:middle;}
+                tr:last-child td{border-bottom:none;}
+                tr:hover td{background:#faf5ff;}
+                .fw{font-weight:600;color:#1a1a1a;}
+                .badge{display:inline-flex;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600;}
+                .b-pend{background:#fef9e7;color:#92400e;} .b-ok{background:#ecfdf5;color:#065f46;} .b-sus{background:#fef2f2;color:#991b1b;}
+                .db-tag{background:#f4f0ff;color:#714b67;padding:2px 7px;border-radius:4px;font-size:11px;font-family:monospace;}
+                .btn{display:inline-flex;align-items:center;padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;transition:all .12s;border:none;cursor:pointer;}
+                .b-approve{background:#714b67;color:#fff;} .b-approve:hover{background:#5d3a55;}
+                .b-suspend{background:#fff3cd;color:#856404;border:1px solid #fcd34d;} .b-suspend:hover{background:#fcd34d;}
+                .empty{padding:36px;text-align:center;color:#ccc;font-size:13px;}
+                .msg-ok{background:#ecfdf5;color:#065f46;border:1px solid #bbf7d0;padding:10px 16px;border-radius:8px;font-size:13px;margin-bottom:16px;}
+                .msg-err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca;padding:10px 16px;border-radius:8px;font-size:13px;margin-bottom:16px;}
+                /* Modal */
+                .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center;}
+                .modal-backdrop.open{display:flex;}
+                .modal{background:#fff;border-radius:14px;padding:32px;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.15);}
+                .modal h3{font-size:17px;font-weight:700;margin:0 0 20px;}
+                .modal .fg{margin-bottom:14px;}
+                .modal label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:4px;}
+                .modal input,.modal select{width:100%;border:1.5px solid #e0e0e0;border-radius:7px;padding:8px 11px;font-size:13px;font-family:inherit;}
+                .modal input:focus,.modal select:focus{outline:none;border-color:#714b67;}
+                .modal-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+                .modal-footer{display:flex;gap:10px;margin-top:20px;justify-content:flex-end;}
+                .btn-cancel{background:#f3f4f6;color:#555;border:none;padding:8px 18px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;}
+                .chk-row{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:#555;}
+            </style>
+
+            <div>
+                <nav class="nav">
+                    <div class="nav-brand">
+                        <div class="nav-logo">R</div>
+                        <span class="nav-title">Raptron ERP Admin</span>
+                    </div>
+                    <div class="nav-links">
+                        <a href="/admin" class="active">Dashboard</a>
+                        <a href="/odoo">Odoo Backend</a>
+                        <a href="/web/session/logout" class="out">Sign Out</a>
+                    </div>
+                </nav>
+
+                <div class="page">
+                    <div class="page-head">
+                        <div>
+                            <h1>Client Management</h1>
+                            <p>Manage registrations, onboarding and database provisioning</p>
+                        </div>
+                        <button class="btn-new" onclick="document.getElementById('modal-create').classList.add('open')">
+                            + New Client
+                        </button>
+                    </div>
+
+                    <t t-if="msg == 'created'"><div class="msg-ok">✅ Client created successfully! Email will be sent on approval.</div></t>
+                    <t t-if="msg == 'email_exists'"><div class="msg-err">⚠️ A client with this email already exists.</div></t>
+                    <t t-if="msg == 'missing_fields'"><div class="msg-err">⚠️ Please fill all required fields.</div></t>
+                    <t t-if="msg == 'error'"><div class="msg-err">⚠️ An error occurred. Check server logs.</div></t>
+
+                    <!-- Stats -->
+                    <div class="stats">
+                        <div class="stat"><div class="stat-ic ic1">🏢</div><div><div class="stat-num c1" t-out="stats['total']">0</div><div class="stat-lbl">Total Clients</div></div></div>
+                        <div class="stat"><div class="stat-ic ic2">⏳</div><div><div class="stat-num c2" t-out="stats['pending']">0</div><div class="stat-lbl">Pending Review</div></div></div>
+                        <div class="stat"><div class="stat-ic ic3">✅</div><div><div class="stat-num c3" t-out="stats['approved']">0</div><div class="stat-lbl">Active</div></div></div>
+                        <div class="stat"><div class="stat-ic ic4">⚠️</div><div><div class="stat-num c4" t-out="stats['suspended']">0</div><div class="stat-lbl">Suspended</div></div></div>
+                    </div>
+
+                    <!-- Pending -->
+                    <div class="card">
+                        <div class="card-head">
+                            <h2>Pending Approvals</h2>
+                            <a href="/odoo/action-raptron_admin.action_saas_registrations">View all in Odoo →</a>
+                        </div>
+                        <t t-if="pending_list">
+                            <table>
+                                <thead><tr><th>Company</th><th>Contact</th><th>Email</th><th>Phone</th><th>Interest</th><th>Database</th><th>Status</th><th>Action</th></tr></thead>
+                                <tbody>
+                                    <t t-foreach="pending_list" t-as="r">
+                                        <tr>
+                                            <td class="fw" t-out="r.name"/>
+                                            <td t-out="r.contact_name"/>
+                                            <td t-out="r.email"/>
+                                            <td t-out="r.phone"/>
+                                            <td t-out="r.primary_interest or '-'"/>
+                                            <td><code class="db-tag" t-out="r.db_name or 'auto'"/></td>
+                                            <td><span class="badge b-pend">Pending</span></td>
+                                            <td><a t-attf-href="/admin/approve/{{ r.id }}" class="btn b-approve" onclick="return confirm('Approve &amp; Provision?')">Approve &amp; Email</a></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+                        <t t-else=""><div class="empty">No pending registrations 🎉</div></t>
+                    </div>
+
+                    <!-- Active -->
+                    <div class="card">
+                        <div class="card-head"><h2>Active Clients</h2></div>
+                        <t t-if="active_list">
+                            <table>
+                                <thead><tr><th>Company</th><th>Contact</th><th>Email</th><th>Subdomain</th><th>Database</th><th>Approved</th><th>Status</th><th>Action</th></tr></thead>
+                                <tbody>
+                                    <t t-foreach="active_list" t-as="r">
+                                        <tr>
+                                            <td class="fw" t-out="r.name"/>
+                                            <td t-out="r.contact_name"/>
+                                            <td t-out="r.email"/>
+                                            <td><a t-attf-href="https://{{ r.subdomain }}" target="_blank" style="color:#714b67;font-weight:500;text-decoration:none;" t-out="r.subdomain"/></td>
+                                            <td><code class="db-tag" t-out="r.db_name"/></td>
+                                            <td t-out="r.approved_date"/>
+                                            <td><span class="badge b-ok">Active</span></td>
+                                            <td><a t-attf-href="/admin/suspend/{{ r.id }}" class="btn b-suspend" onclick="return confirm('Suspend client?')">Suspend</a></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+                        <t t-else=""><div class="empty">No active clients yet</div></t>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Client Modal -->
+            <div class="modal-backdrop" id="modal-create" onclick="if(event.target===this)this.classList.remove('open')">
+                <div class="modal">
+                    <h3>➕ Create New Client</h3>
+                    <form action="/admin/create" method="POST">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="modal-row">
+                            <div class="fg"><label>Company Name *</label><input name="name" required="required" placeholder="Acme Ltd."/></div>
+                            <div class="fg"><label>Contact Name *</label><input name="contact_name" required="required" placeholder="Full name"/></div>
+                        </div>
+                        <div class="fg"><label>Email *</label><input name="email" type="email" required="required" placeholder="admin@company.com"/></div>
+                        <div class="modal-row">
+                            <div class="fg"><label>Phone *</label><input name="phone" required="required" value="+880"/></div>
+                            <div class="fg">
+                                <label>Company Size</label>
+                                <select name="company_size">
+                                    <option value="">Select...</option>
+                                    <option value="1-5">1–5</option>
+                                    <option value="6-20">6–20</option>
+                                    <option value="21-100">21–100</option>
+                                    <option value="100+">100+</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="fg">
+                            <label>🔑 Admin Password (leave blank to auto-generate)</label>
+                            <input name="admin_password" type="password" placeholder="Auto-generated if empty"/>
+                        </div>
+                        <div class="fg">
+                            <label>Primary Interest</label>
+                            <input name="primary_interest" placeholder="e.g. LC Management, Accounting"/>
+                        </div>
+                        <div class="fg">
+                            <label>Country</label>
+                            <select name="country_id">
+                                <option value="">Select country...</option>
+                                <t t-foreach="countries" t-as="c">
+                                    <option t-att-value="c.id" t-att-selected="'selected' if c.code == 'BD' else False"><t t-out="c.name"/></option>
+                                </t>
+                            </select>
+                        </div>
+                        <label class="chk-row">
+                            <input type="checkbox" name="auto_approve" value="1"/>
+                            Approve &amp; provision database immediately (sends credentials email)
+                        </label>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-cancel" onclick="document.getElementById('modal-create').classList.remove('open')">Cancel</button>
+                            <button type="submit" class="btn b-approve" style="padding:8px 20px;font-size:13px;">Create Client</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,15 @@
+{
+  "name": "Syscomatic",
+  "short_name": "Syscomatic",
+  "start_url": "/web",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6C2BFF",
+  "icons": [
+    {
+      "src": "/raptron_admin/static/src/img/logo.png",
+      "sizes": "277x277",
+      "type": "image/png"
+    }
+  ]
+}

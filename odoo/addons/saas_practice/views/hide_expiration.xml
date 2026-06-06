@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="hide_subscription_warning" inherit_id="web.layout">
+        <xpath expr="//body" position="inside">
+            <style>
+                /* Aggressively hide all Odoo Enterprise subscription/expiration banners */
+                .o_notification_manager .o_notification:has(.o_notification_title:contains("subscription")),
+                .o_notification_manager .o_notification:has(.o_notification_content:contains("expire")),
+                .o_notification_manager .o_notification:has(.o_notification_content:contains("subscription")),
+                .o_subscription_warning,
+                .database_expiration_panel,
+                div[class*="o_subscription"],
+                div[class*="expiration"],
+                .alert-info:contains("Register your subscription"),
+                .alert-warning:contains("expire"),
+                div:has(> a[href*="odoo.com/buy"]),
+                div:has(> a[href*="odoo.com/register"]) {
+                    display: none !important;
+                    visibility: hidden !important;
+                    height: 0 !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                    opacity: 0 !important;
+                    pointer-events: none !important;
+                }
+            </style>
+        </xpath>
+    </template>
+</odoo>

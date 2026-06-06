@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Override favicon for all Odoo pages -->
+    <template id="sysco_web_favicon" inherit_id="web.layout" name="Syscomatic Favicon">
+        <xpath expr="//title" position="replace">
+            <title t-esc="title or 'Syscomatic'"/>
+        </xpath>
+        <xpath expr="//link[@rel='shortcut icon']" position="replace">
+            <link type="image/png" rel="shortcut icon" href="/raptron_admin/static/src/img/logo.png"/>
+            <link rel="apple-touch-icon" href="/raptron_admin/static/src/img/logo.png"/>
+            <link rel="icon" type="image/png" sizes="192x192" href="/raptron_admin/static/src/img/logo.png"/>
+            <link rel="icon" type="image/png" sizes="512x512" href="/raptron_admin/static/src/img/logo.png"/>
+            <link rel="manifest" href="/raptron_admin/static/src/manifest.json"/>
+            <meta name="theme-color" content="#6C2BFF"/>
+            <meta name="apple-mobile-web-app-title" content="Syscomatic"/>
+            <meta name="application-name" content="Syscomatic"/>
+        </xpath>
+    </template>
+</odoo>

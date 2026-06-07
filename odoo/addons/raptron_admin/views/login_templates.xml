@@ -1,12 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- ============================================================ -->
+    <!-- CUSTOM LOGIN PAGE — AL GARSHOUB                               -->
+    <!-- ============================================================ -->
+    <!--
+        NUCLEAR OVERRIDE: replace the ENTIRE web.login_layout.
+
+        Why this approach:
+        - website.login_layout (priority=20) modifies web.login_layout
+        - web_enterprise.webclient_login (priority=16) also modifies it
+        - Other modules may add their own overrides
+        - With priority=99 we run LAST and replace whatever arch remains
+          with our custom branded login HTML.
+
+        This works whether or not the website module is installed.
+    -->
     <template id="garshoub_login_layout"
               inherit_id="web.login_layout"
               name="Al Garshoub Login"
               priority="99">
 
-        <xpath expr="t" position="replace">
+        <xpath expr="." position="replace">
             <t t-call="web.frontend_layout">
                 <t t-set="no_header" t-value="True"/>
                 <t t-set="no_footer" t-value="True"/>
@@ -23,6 +38,9 @@
                             <span class="garshoub-badge">INTERNAL MANAGEMENT PORTAL</span>
                             <h1>Welcome to <br/> <span class="garshoub-title-white">Al Garshoub</span> <br/> <span class="garshoub-title-gold">Retail Hub</span></h1>
                             <p>Manage outlet sales, inventory, purchase and accounts in one central platform.</p>
+                        </div>
+                        <div class="garshoub-left-image">
+                            <img src="/raptron_admin/static/src/img/loginbg.png" alt="Al Garshoub Products"/>
                         </div>
                     </div>
 

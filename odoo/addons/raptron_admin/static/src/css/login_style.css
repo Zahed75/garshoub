@@ -53,7 +53,7 @@ header, footer, #top_menu_container, .o_frontend_footer {
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     padding: 50px;
     overflow: hidden;
     background: linear-gradient(160deg, var(--garshoub-green-dark) 0%, var(--garshoub-green) 60%, var(--garshoub-green-light) 100%);
@@ -62,10 +62,11 @@ header, footer, #top_menu_container, .o_frontend_footer {
 .garshoub-brand {
     position: relative;
     z-index: 2;
+    margin-bottom: 30px;
 }
 
 .garshoub-brand img {
-    height: 60px;
+    height: 80px;
     width: auto;
     filter: brightness(0) invert(1);
 }
@@ -74,7 +75,28 @@ header, footer, #top_menu_container, .o_frontend_footer {
     position: relative;
     z-index: 2;
     max-width: 480px;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
+}
+
+.garshoub-left-image {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 520px;
+    margin-top: auto;
+    text-align: center;
+}
+
+.garshoub-left-image img {
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    max-height: 320px;
+    object-fit: contain;
+    border-radius: 20px;
+    display: block;
+    margin: 0 auto;
+    filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.25));
 }
 
 .garshoub-badge {
@@ -94,7 +116,7 @@ header, footer, #top_menu_container, .o_frontend_footer {
 .garshoub-content h1 {
     margin: 0 0 20px 0;
     color: white;
-    font-size: 52px;
+    font-size: 46px;
     font-weight: 800;
     line-height: 1.15;
 }

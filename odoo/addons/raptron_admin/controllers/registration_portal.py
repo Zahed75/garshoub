@@ -10,11 +10,6 @@ class RaptronAdminPortal(http.Controller):
 
     # ─── PUBLIC REGISTRATION FORM ────────────────────────────────────────────
 
-    @http.route('/', type='http', auth='public', website=False, csrf=False)
-    def registration_form(self, **kw):
-        # Redirect root domain to login page for internal ERP access
-        return request.redirect('/web/login')
-
     @http.route('/register', type='http', auth='public', methods=['POST'], csrf=False)
     def register_submit(self, **post):
         required = ['contact_name', 'name', 'email', 'phone']

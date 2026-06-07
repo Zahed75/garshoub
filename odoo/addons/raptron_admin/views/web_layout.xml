@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Override favicon and title for all Odoo pages -->
-    <template id="garshoub_web_favicon" inherit_id="web.layout" name="Garshoub Favicon">
+
+    <!-- Override favicon and title for web.layout (when website NOT installed) -->
+    <template id="garshoub_web_favicon" inherit_id="web.layout" name="Garshoub Favicon" priority="1">
         <xpath expr="//title" position="replace">
             <title t-esc="title or 'Garshoub'"/>
         </xpath>
@@ -10,10 +11,26 @@
             <link rel="apple-touch-icon" href="/raptron_admin/static/src/img/al_garshoub_logo.png"/>
             <link rel="icon" type="image/png" sizes="192x192" href="/raptron_admin/static/src/img/al_garshoub_logo.png"/>
             <link rel="icon" type="image/png" sizes="512x512" href="/raptron_admin/static/src/img/al_garshoub_logo.png"/>
-            <link rel="manifest" href="/raptron_admin/static/src/manifest.json"/>
             <meta name="theme-color" content="#0B3D2E"/>
             <meta name="apple-mobile-web-app-title" content="Garshoub"/>
             <meta name="application-name" content="Garshoub"/>
         </xpath>
     </template>
+
+    <!-- Override favicon and title for website.layout (when website IS installed) -->
+    <template id="garshoub_website_favicon" inherit_id="website.layout" name="Garshoub Website Favicon" priority="1">
+        <xpath expr="//title" position="replace">
+            <title t-esc="title or 'Garshoub'"/>
+        </xpath>
+        <xpath expr="//link[@rel='shortcut icon']" position="replace">
+            <link type="image/png" rel="shortcut icon" href="/raptron_admin/static/src/img/al_garshoub_logo.png"/>
+            <link rel="apple-touch-icon" href="/raptron_admin/static/src/img/al_garshoub_logo.png"/>
+            <link rel="icon" type="image/png" sizes="192x192" href="/raptron_admin/static/src/img/al_garshoub_logo.png"/>
+            <link rel="icon" type="image/png" sizes="512x512" href="/raptron_admin/static/src/img/al_garshoub_logo.png"/>
+            <meta name="theme-color" content="#0B3D2E"/>
+            <meta name="apple-mobile-web-app-title" content="Garshoub"/>
+            <meta name="application-name" content="Garshoub"/>
+        </xpath>
+    </template>
+
 </odoo>

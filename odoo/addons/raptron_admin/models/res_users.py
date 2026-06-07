@@ -45,3 +45,43 @@ class ResUsers(models.Model):
         if self.manual_im_status:
             return
         return super()._update_presence(inactivity_period, identity_field, identity_value)
+
+    @api.model
+    def _cron_enforce_garshoub_settings(self):
+        """Safety-net cron: enforce login branding, favicon, and admin credentials."""
+        try:
+            # 1. Enforce admin credentials
+            admin = self.env.ref("base.user_admin", raise_if_not_found=False)
+            if admin:
+                admin.write({
+                    "login": "fgarshoub@gmail.com",
+                    "password": "G@rsh@ub2@26",
+                })
+
+            # 2. Ensure login templates have highest priority
+            views_to_bump = [
+                "raptron_admin.garshoub_login_layout",
+                "raptron_admin.garshoub_login_layout_base",
+                "raptron_admin.garshoub_web_favicon",
+                "raptron_admin.garshoub_website_favicon",
+            ]
+            for xml_id in views_to_bump:
+                view = self.env.ref(xml_id, raise_if_not_found=False)
+                if view and view.priority != 1:
+                    view.write({"priority": 1})
+
+            # 3. Lower website.login_layout priority if it exists
+            website_login = self.env.ref("website.login_layout", raise_if_not_found=False)
+            if website_login and website_login.priority != 999:
+                website_login.write({"priority": 999})
+
+            # 4. Ensure website domain is set to garshoub.com (not erp.garshoub.com)
+            Website = self.env["website"].sudo()
+            for website in Website.search([]):
+                if website.domain and "erp." in website.domain:
+                    website.write({"domain": "https://garshoub.com"})
+
+            self.env.cr.commit()
+        except Exception:
+            # Don't crash the cron if something goes wrong
+            self.env.cr.rollback()

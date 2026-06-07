@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!--
-        CUSTOM LOGIN PAGE FOR AL GARSHOUB
+    <!-- ============================================================ -->
+    <!-- CUSTOM LOGIN PAGE — AL GARSHOUB                               -->
+    <!-- ============================================================ -->
+    <!-- 
+        WHY THIS APPROACH:
         
-        Strategy: Override the website.login_layout template which is what
-        gets called when the website module is installed. We replace the
-        website.layout call with our own custom two-column layout.
+        The website module installs 'website.login_layout' which inherits
+        from 'web.login_layout' and wraps the login in 'website.layout'.
         
-        Priority 1 = highest priority, loaded first.
+        raptron_admin now DEPENDS on 'website', so our views are loaded
+        AFTER website's views. With priority="1" (highest), our override
+        is applied last and wins.
+        
+        We target the t-call element that website.login_layout injected
+        and replace it entirely with our own web.frontend_layout call.
     -->
 
     <template id="garshoub_login_layout"
@@ -16,7 +23,6 @@
               name="Al Garshoub Login"
               priority="1">
 
-        <!-- Replace the t-call from website.layout to our custom layout -->
         <xpath expr="//t[@t-call='website.layout']" position="replace">
             <t t-call="web.frontend_layout">
                 <t t-set="no_header" t-value="True"/>
@@ -66,10 +72,7 @@
 
     </template>
 
-    <!--
-        Also override web.login_layout directly for when website is NOT installed.
-        This ensures our login works in both cases.
-    -->
+    <!-- Fallback: also override web.login_layout directly when website is NOT installed -->
     <template id="garshoub_login_layout_base"
               inherit_id="web.login_layout"
               name="Al Garshoub Login Base"

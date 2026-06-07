@@ -68,7 +68,7 @@ jobs:
             
             # Backup database before deployment
             echo "Creating pre-deployment backup..."
-            docker compose exec -T db pg_dump -U ${{ secrets.STAGING_DB_USER || 'odoo' }} -d "${{ secrets.STAGING_DB_NAME || 'Garshoub HQ' }}" > ./backups/pre_deploy_$(date +%Y%m%d_%H%M%S).sql || true
+            docker compose exec -T db pg_dump -U ${{ secrets.STAGING_DB_USER || 'odoo' }} -d "${{ secrets.STAGING_DB_NAME || 'garshoub_hq' }}" > ./backups/pre_deploy_$(date +%Y%m%d_%H%M%S).sql || true
             
             # Pull latest code from staging branch
             git fetch origin
@@ -124,7 +124,7 @@ jobs:
             # Backup database before deployment (only if db container is running)
             echo "Creating pre-deployment backup..."
             if $DC ps | grep -q "odoo_postgres"; then
-              $DC exec -T db pg_dump -U ${{ secrets.PROD_DB_USER || 'odoo' }} -d "${{ secrets.PROD_DB_NAME || 'Garshoub HQ' }}" > ./backups/pre_deploy_$(date +%Y%m%d_%H%M%S).sql || echo "Backup failed, continuing..."
+              $DC exec -T db pg_dump -U ${{ secrets.PROD_DB_USER || 'odoo' }} -d "${{ secrets.PROD_DB_NAME || 'garshoub_hq' }}" > ./backups/pre_deploy_$(date +%Y%m%d_%H%M%S).sql || echo "Backup failed, continuing..."
             else
               echo "DB container not running, skipping backup..."
             fi

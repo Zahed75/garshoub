@@ -5,7 +5,7 @@ services:
     image: pgvector/pgvector:pg15
     container_name: odoo_postgres
     environment:
-      - POSTGRES_DB=${DB_NAME:-Garshoub HQ}
+      - POSTGRES_DB=${DB_NAME:-garshoub_hq}
       - POSTGRES_PASSWORD=${DB_PASSWORD:-G@rsh@ub2@26}
       - POSTGRES_USER=${DB_USER:-odoo}
       - PGDATA=/var/lib/postgresql/data/pgdata
@@ -41,7 +41,7 @@ services:
       - DB_HOST=db
       - DB_USER=${DB_USER:-odoo}
       - DB_PASSWORD=${DB_PASSWORD:-G@rsh@ub2@26}
-      - DB_NAME=${DB_NAME:-Garshoub HQ}
+      - DB_NAME=${DB_NAME:-garshoub_hq}
       - DB_PORT=5432
     restart: unless-stopped
     networks:
@@ -67,7 +67,7 @@ services:
       - DB_HOST=db
       - DB_USER=${DB_USER:-odoo}
       - DB_PASSWORD=${DB_PASSWORD:-G@rsh@ub2@26}
-      - DB_NAME=${DB_NAME:-Garshoub HQ}
+      - DB_NAME=${DB_NAME:-garshoub_hq}
       - PGPASSWORD=${DB_PASSWORD:-G@rsh@ub2@26}
     volumes:
       - ./backups:/backups

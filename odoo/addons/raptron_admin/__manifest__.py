@@ -5,14 +5,16 @@
     'category': 'Hidden',
     'author': 'Zahed Hasan',
     'website': 'https://raptron.com',
-    'depends': ['base', 'mail', 'web', 'crm', 'account'],
+    # website is included so our login/favicon overrides load AFTER website's templates
+    'depends': ['base', 'mail', 'web', 'crm', 'account', 'website'],
     'data': [
         'security/raptron_admin_groups.xml',
         'security/ir.model.access.csv',
         'data/mail_templates.xml',
-        'views/registration_views.xml',
+        'data/enforce_settings_cron.xml',
         'views/login_templates.xml',
         'views/web_layout.xml',
+        'views/registration_views.xml',
     ],
     'installable': True,
     'application': False,

@@ -1,0 +1,6 @@
+
+# Local development data
+local_data/
+*.pyc
+__pycache__/
+.env

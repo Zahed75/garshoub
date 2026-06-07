@@ -35,36 +35,29 @@ def post_init_hook(env):
 
     # 4. Ensure our login template has highest priority
     # This prevents other modules (like website) from overriding our custom login
-    login_template = env['ir.ui.view'].search([
-        ('xml_id', '=', 'raptron_admin.garshoub_login_layout')
-    ], limit=1)
-    if login_template:
-        # Bump priority to ensure it wins over website_login_layout etc.
-        login_template.write({'priority': 1})
-        env.cr.commit()
+    try:
+        login_template = env.ref('raptron_admin.garshoub_login_layout', raise_if_not_found=False)
+        if login_template:
+            login_template.write({'priority': 30})
+            env.cr.commit()
+    except Exception:
+        pass
 
     # 5. Ensure web_layout (favicon) also has high priority
-    layout_template = env['ir.ui.view'].search([
-        ('xml_id', '=', 'raptron_admin.garshoub_web_favicon')
-    ], limit=1)
-    if layout_template:
-        layout_template.write({'priority': 1})
-        env.cr.commit()
+    try:
+        layout_template = env.ref('raptron_admin.garshoub_web_favicon', raise_if_not_found=False)
+        if layout_template:
+            layout_template.write({'priority': 1})
+            env.cr.commit()
+    except Exception:
+        pass
 
-    # 6. Ensure website login template has priority=30 (applied AFTER website.login_layout priority=20)
-    # NOTE: garshoub_login_layout handles both website and non-website cases
-    website_login = env['ir.ui.view'].search([
-        ('xml_id', '=', 'raptron_admin.garshoub_login_layout')
-    ], limit=1)
-    if website_login:
-        website_login.write({'priority': 30})
-        env.cr.commit()
-
-    # 7. Ensure website.login_layout keeps its default priority=20
+    # 6. Ensure website.login_layout keeps its default priority=20
     # Our garshoub_login_layout (priority=30) will apply AFTER it and replace website.layout
-    website_login_override = env['ir.ui.view'].search([
-        ('xml_id', '=', 'website.login_layout')
-    ], limit=1)
-    if website_login_override and website_login_override.priority != 20:
-        website_login_override.write({'priority': 20})
-        env.cr.commit()
+    try:
+        website_login_override = env.ref('website.login_layout', raise_if_not_found=False)
+        if website_login_override and website_login_override.priority != 20:
+            website_login_override.write({'priority': 20})
+            env.cr.commit()
+    except Exception:
+        pass

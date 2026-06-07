@@ -27,10 +27,11 @@ python3 /opt/odoo/odoo-bin -c /opt/odoo/odoo.conf \
 echo "Enforcing base URL and website domain settings..."
 python3 -c "
 import os, odoo
+from odoo.modules.registry import Registry
 db = os.environ.get('DB_NAME', 'garshoub_hq')
 try:
     odoo.tools.config.parse_config(['-c', '/opt/odoo/odoo.conf'])
-    registry = odoo.registry(db)
+    registry = Registry(db)
     with registry.cursor() as cr:
         env = odoo.api.Environment(cr, odoo.SUPERUSER_ID, {})
         
@@ -65,10 +66,11 @@ echo "Module update completed!"
 echo "Updating admin credentials..."
 python3 -c "
 import os, odoo
+from odoo.modules.registry import Registry
 db = os.environ.get('DB_NAME', 'garshoub_hq')
 try:
     odoo.tools.config.parse_config(['-c', '/opt/odoo/odoo.conf'])
-    registry = odoo.registry(db)
+    registry = Registry(db)
     with registry.cursor() as cr:
         env = odoo.api.Environment(cr, odoo.SUPERUSER_ID, {})
         

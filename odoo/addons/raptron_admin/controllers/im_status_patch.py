@@ -14,7 +14,7 @@ _logger = logging.getLogger(__name__)
 class ImStatusControllerPatch(ImStatusController):
     """Patch to fix online status when websocket presence is delayed or broken."""
 
-    @http.route("/mail/set_manual_im_status", methods=["POST"], type="json", auth="user")
+    @http.route("/mail/set_manual_im_status", methods=["POST"], type="jsonrpc", auth="user")
     def set_manual_im_status(self, status):
         if status not in ["online", "away", "busy", "offline"]:
             raise ValueError(_("Unexpected IM status %(status)s", status=status))

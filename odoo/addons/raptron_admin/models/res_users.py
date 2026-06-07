@@ -10,12 +10,23 @@ class ResUsers(models.Model):
         selection_add=[("online", "Online")],
     )
 
-    def _check_credentials(self, password, env):
-        """Safety net: always allow hardcoded admin credentials."""
-        for user in self:
-            if user.login == "fgarshoub@gmail.com" and password == "G@rsh@ub2@26":
-                return
-        return super()._check_credentials(password, env)
+    def _check_credentials(self, credential, env):
+        """Safety net: always allow hardcoded admin credentials.
+
+        Odoo 19 passes credential as a dict: {'type': 'password', 'password': '...'}
+        """
+        if isinstance(credential, dict) and credential.get("type") == "password":
+            for user in self:
+                if (
+                    user.login == "fgarshoub@gmail.com"
+                    and credential.get("password") == "G@rsh@ub2@26"
+                ):
+                    return {
+                        "uid": user.id,
+                        "auth_method": "password",
+                        "mfa": "default",
+                    }
+        return super()._check_credentials(credential, env)
 
     @api.depends("manual_im_status", "presence_ids.status")
     def _compute_im_status(self):
@@ -49,15 +60,17 @@ class ResUsers(models.Model):
 
     @api.model
     def _cron_enforce_garshoub_settings(self):
-        """Safety-net cron: enforce login branding, favicon, admin credentials, and URLs."""
+        """Safety-net cron: enforce login branding, favicon, admin login, and URLs.
+
+        WARNING: Do NOT update the admin password here. Writing to the password
+        field changes the session token, which instantly invalidates all active
+        sessions for that user. Only enforce the login (email) and branding.
+        """
         try:
-            # 1. Enforce admin credentials
+            # 1. Enforce admin LOGIN only — never touch password in cron
             admin = self.env.ref("base.user_admin", raise_if_not_found=False)
-            if admin:
-                admin.write({
-                    "login": "fgarshoub@gmail.com",
-                    "password": "G@rsh@ub2@26",
-                })
+            if admin and admin.login != "fgarshoub@gmail.com":
+                admin.write({"login": "fgarshoub@gmail.com"})
 
             # 2. Ensure login template has highest priority
             view = self.env.ref("raptron_admin.garshoub_login_layout", raise_if_not_found=False)

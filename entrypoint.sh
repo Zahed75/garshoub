@@ -62,8 +62,10 @@ rm -rf /var/lib/odoo/assets-*
 touch /var/lib/odoo/.initialized
 echo "Module update completed!"
 
-# Update admin user credentials from code (runs on EVERY startup)
-echo "Updating admin credentials..."
+# Update admin login from code (runs on EVERY startup)
+# WARNING: Never update password here — it changes the session token
+# and instantly kills all active sessions for that user.
+echo "Updating admin login..."
 python3 -c "
 import os, odoo
 from odoo.modules.registry import Registry
@@ -74,10 +76,13 @@ try:
     with registry.cursor() as cr:
         env = odoo.api.Environment(cr, odoo.SUPERUSER_ID, {})
         
-        # 1. Update base.user_admin
+        # 1. Update base.user_admin login only (never password)
         admin = env.ref('base.user_admin')
-        admin.write({'login': 'fgarshoub@gmail.com', 'password': 'G@rsh@ub2@26'})
-        print(f'[entrypoint] base.user_admin updated: login={admin.login}')
+        if admin.login != 'fgarshoub@gmail.com':
+            admin.write({'login': 'fgarshoub@gmail.com'})
+            print(f'[entrypoint] base.user_admin login updated: {admin.login}')
+        else:
+            print('[entrypoint] base.user_admin login already correct')
         
         # 2. Also find and update ANY user with the old login
         old_users = env['res.users'].search([
@@ -87,11 +92,11 @@ try:
         ])
         for old in old_users:
             if old.id != admin.id:
-                old.write({'login': 'fgarshoub@gmail.com', 'password': 'G@rsh@ub2@26'})
-                print(f'[entrypoint] Old user {old.id} updated to new credentials')
+                old.write({'login': 'fgarshoub@gmail.com'})
+                print(f'[entrypoint] Old user {old.id} login updated')
         
         env.cr.commit()
-        print('[entrypoint] Admin credentials updated successfully')
+        print('[entrypoint] Admin login check completed')
 except Exception as e:
     print(f'[entrypoint] Admin update warning: {e}')
 " || echo "Admin update skipped"

@@ -14,13 +14,44 @@ until pg_isready -h "${DB_HOST:-db}" -p 5432 -U "${DB_USER:-odoo}"; do
 done
 echo "Database is ready!"
 
-# ALWAYS update raptron_admin on every startup
-# This ensures template/CSS changes are applied without manual intervention
-echo "Updating raptron_admin module..."
+# ALWAYS ensure raptron_admin is installed and up-to-date on every startup
+# --init installs if missing, --update applies changes if already installed
+echo "Installing / Updating raptron_admin module..."
 python3 /opt/odoo/odoo-bin -c /opt/odoo/odoo.conf \
     -d "${DB_NAME:-Garshoub HQ}" \
+    --init=raptron_admin \
     --update=raptron_admin \
     --stop-after-init
+
+# Enforce correct base URL and website domain settings
+echo "Enforcing base URL and website domain settings..."
+python3 -c "
+import os, odoo
+db = os.environ.get('DB_NAME', 'Garshoub HQ')
+try:
+    odoo.tools.config.parse_config(['-c', '/opt/odoo/odoo.conf'])
+    registry = odoo.registry(db)
+    with registry.cursor() as cr:
+        env = odoo.api.Environment(cr, odoo.SUPERUSER_ID, {})
+        
+        # 1. Freeze web.base.url to erp.garshoub.com so assets generate correctly
+        param = env['ir.config_parameter'].sudo()
+        param.set_param('web.base.url', 'https://erp.garshoub.com')
+        param.set_param('web.base.url.freeze', '1')
+        print('[entrypoint] web.base.url set to https://erp.garshoub.com (frozen)')
+        
+        # 2. Ensure website domain is garshoub.com (public site), not erp.garshoub.com
+        Website = env['website'].sudo()
+        for website in Website.search([]):
+            if website.domain != 'garshoub.com':
+                website.write({'domain': 'garshoub.com'})
+                print(f'[entrypoint] Website {website.id} domain set to garshoub.com')
+        
+        env.cr.commit()
+        print('[entrypoint] URL settings enforced successfully')
+except Exception as e:
+    print(f'[entrypoint] URL enforcement warning: {e}')
+" || echo "URL enforcement skipped"
 
 # Clear asset cache to force fresh CSS/JS bundles
 echo "Clearing asset cache..."

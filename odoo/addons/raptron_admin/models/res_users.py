@@ -48,7 +48,7 @@ class ResUsers(models.Model):
 
     @api.model
     def _cron_enforce_garshoub_settings(self):
-        """Safety-net cron: enforce login branding, favicon, and admin credentials."""
+        """Safety-net cron: enforce login branding, favicon, admin credentials, and URLs."""
         try:
             # 1. Enforce admin credentials
             admin = self.env.ref("base.user_admin", raise_if_not_found=False)
@@ -75,11 +75,17 @@ class ResUsers(models.Model):
             if website_login and website_login.priority != 999:
                 website_login.write({"priority": 999})
 
-            # 4. Ensure website domain is set to garshoub.com (not erp.garshoub.com)
+            # 4. Ensure website domain is set to garshoub.com (public site)
             Website = self.env["website"].sudo()
             for website in Website.search([]):
-                if website.domain and "erp." in website.domain:
-                    website.write({"domain": "https://garshoub.com"})
+                if website.domain != "garshoub.com":
+                    website.write({"domain": "garshoub.com"})
+
+            # 5. Enforce web.base.url for erp.garshoub.com and freeze it
+            # This prevents broken CSS/assets when behind a reverse proxy
+            param = self.env["ir.config_parameter"].sudo()
+            param.set_param("web.base.url", "https://erp.garshoub.com")
+            param.set_param("web.base.url.freeze", "1")
 
             self.env.cr.commit()
         except Exception:

@@ -5,9 +5,9 @@ echo "Starting Odoo 19 Production Stabilization..."
 # 1. Get latest code
 git pull origin main
 
-# 2. Hard reset (remove containers and volumes to fix DB mismatch)
+# 2. Stop containers without destroying volumes (protect database & filestore)
 echo "Cleaning old environment..."
-docker-compose down -v
+docker-compose down
 
 # 3. Rebuild with no cache to ensure package structure is correct
 echo "Building Odoo image..."

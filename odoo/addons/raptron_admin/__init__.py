@@ -52,8 +52,9 @@ def post_init_hook(env):
         env.cr.commit()
 
     # 6. Ensure website login template also has highest priority
+    # NOTE: garshoub_login_layout handles both website and non-website cases
     website_login = env['ir.ui.view'].search([
-        ('xml_id', '=', 'raptron_admin.garshoub_website_login_layout')
+        ('xml_id', '=', 'raptron_admin.garshoub_login_layout')
     ], limit=1)
     if website_login:
         website_login.write({'priority': 1})

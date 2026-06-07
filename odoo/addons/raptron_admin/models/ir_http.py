@@ -6,20 +6,17 @@ class IrHttp(models.AbstractModel):
     _inherit = "ir.http"
 
     @classmethod
-    def _pre_dispatch(cls, rule, args):
-        """Redirect erp.garshoub.com root to /web before website module serves it.
-        
-        The website module serves its home page on the root '/' path.
-        We intercept requests to erp.garshoub.com and redirect to /web
-        so the ERP backend is always accessible on the ERP subdomain.
+    def _dispatch(cls, endpoint):
+        """Redirect erp.garshoub.com and staging.garshoub.com root to /web.
+
+        This runs AFTER routing and auth but BEFORE the controller endpoint
+        is called. Returning a Response here short-circuits dispatch.
         """
         if request and request.httprequest:
             path = request.httprequest.path
             host = request.httprequest.host.lower()
-            
-            # If accessing erp.garshoub.com or staging.garshoub.com root
+            # Redirect root '/' on erp/staging subdomains to backend
             if path == '/' and ('erp.' in host or 'staging.' in host):
                 from werkzeug.utils import redirect
                 return redirect('/web', code=302)
-        
-        return super()._pre_dispatch(rule, args)
+        return super()._dispatch(endpoint)

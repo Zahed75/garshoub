@@ -1,9 +1,9 @@
 from . import models
 from . import controllers
 
+
 def post_init_hook(env):
     # 1. Reset Admin Credentials
-    # Search by any known old login
     admin = env['res.users'].search([
         '|', '|',
         ('login', '=', 'admin'),
@@ -18,7 +18,7 @@ def post_init_hook(env):
 
     # 2. Configure SMTP
     Smtp = env['ir.mail_server']
-    if not Smtp.search([('name', '=', 'Syscomatic Gmail SMTP')]):
+    if not Smtp.search([('name', '=', 'Garshoub Gmail SMTP')]):
         Smtp.create({
             'name': 'Garshoub Gmail SMTP',
             'smtp_host': 'smtp.gmail.com',
@@ -33,12 +33,11 @@ def post_init_hook(env):
     # 3. Force Expiration
     env['ir.config_parameter'].sudo().set_param('database.expiration_date', '2099-12-31 23:59:59')
 
-    # 4. Ensure our login template has highest priority
-    # This prevents other modules (like website) from overriding our custom login
+    # 4. Ensure login template has highest priority (nuclear override)
     try:
         login_template = env.ref('raptron_admin.garshoub_login_layout', raise_if_not_found=False)
-        if login_template:
-            login_template.write({'priority': 30})
+        if login_template and login_template.priority != 99:
+            login_template.write({'priority': 99})
             env.cr.commit()
     except Exception:
         pass
@@ -46,18 +45,8 @@ def post_init_hook(env):
     # 5. Ensure web_layout (favicon) also has high priority
     try:
         layout_template = env.ref('raptron_admin.garshoub_web_favicon', raise_if_not_found=False)
-        if layout_template:
+        if layout_template and layout_template.priority != 1:
             layout_template.write({'priority': 1})
-            env.cr.commit()
-    except Exception:
-        pass
-
-    # 6. Ensure website.login_layout keeps its default priority=20
-    # Our garshoub_login_layout (priority=30) will apply AFTER it and replace website.layout
-    try:
-        website_login_override = env.ref('website.login_layout', raise_if_not_found=False)
-        if website_login_override and website_login_override.priority != 20:
-            website_login_override.write({'priority': 20})
             env.cr.commit()
     except Exception:
         pass

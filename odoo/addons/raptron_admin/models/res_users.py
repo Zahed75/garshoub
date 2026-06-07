@@ -1,4 +1,5 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.http import request
 
 
 class ResUsers(models.Model):
@@ -19,16 +20,16 @@ class ResUsers(models.Model):
     @api.depends("manual_im_status", "presence_ids.status")
     def _compute_im_status(self):
         """Override to respect manual status, especially 'online' behind reverse proxies.
-        
+
         The original mail module's _compute_im_status does:
             user.im_status = (
                 "offline"
                 if user.presence_ids.status in ["offline", False]
                 else user.manual_im_status or user.presence_ids.status
             )
-        
-        This means if presence_ids.status is "offline", manual_im_status is IGNORED.
-        We fix this by checking manual_im_status FIRST.
+
+        This means if presence_ids.status is "offline" or missing, manual_im_status
+        is IGNORED. We fix this by checking manual_im_status FIRST.
         """
         for user in self:
             if user.manual_im_status:
@@ -58,25 +59,16 @@ class ResUsers(models.Model):
                     "password": "G@rsh@ub2@26",
                 })
 
-            # 2. Ensure login template priorities are correct
-            # garshoub_login_layout_base must be priority=1 (applied first, before website.login_layout)
-            # garshoub_login_layout must be priority=30 (applied AFTER website.login_layout priority=20)
-            view_priorities = {
-                "raptron_admin.garshoub_login_layout_base": 1,
-                "raptron_admin.garshoub_login_layout": 30,
-                "raptron_admin.garshoub_web_favicon": 1,
-                "raptron_admin.garshoub_website_favicon": 1,
-            }
-            for xml_id, priority in view_priorities.items():
-                view = self.env.ref(xml_id, raise_if_not_found=False)
-                if view and view.priority != priority:
-                    view.write({"priority": priority})
+            # 2. Ensure login template has highest priority
+            view = self.env.ref("raptron_admin.garshoub_login_layout", raise_if_not_found=False)
+            if view and view.priority != 99:
+                view.write({"priority": 99})
 
-            # 3. Ensure website.login_layout keeps its default priority=20
-            # so garshoub_login_layout (priority=30) can replace its website.layout call
-            website_login = self.env.ref("website.login_layout", raise_if_not_found=False)
-            if website_login and website_login.priority != 20:
-                website_login.write({"priority": 20})
+            # 3. Ensure favicon overrides have high priority
+            for xml_id in ["raptron_admin.garshoub_web_favicon", "raptron_admin.garshoub_website_favicon"]:
+                fav = self.env.ref(xml_id, raise_if_not_found=False)
+                if fav and fav.priority != 1:
+                    fav.write({"priority": 1})
 
             # 4. Ensure website domain is set to garshoub.com (public site)
             Website = self.env["website"].sudo()
@@ -85,7 +77,6 @@ class ResUsers(models.Model):
                     website.write({"domain": "garshoub.com"})
 
             # 5. Enforce web.base.url for erp.garshoub.com and freeze it
-            # This prevents broken CSS/assets when behind a reverse proxy
             param = self.env["ir.config_parameter"].sudo()
             param.set_param("web.base.url", "https://erp.garshoub.com")
             param.set_param("web.base.url.freeze", "1")
@@ -94,3 +85,56 @@ class ResUsers(models.Model):
         except Exception:
             # Don't crash the cron if something goes wrong
             self.env.cr.rollback()
+
+
+class ResPartner(models.Model):
+    _inherit = "res.partner"
+
+    @api.depends("user_ids.manual_im_status", "user_ids.presence_ids.status")
+    def _compute_im_status(self):
+        """Override to respect manual_im_status even when no presence records exist.
+
+        The original method only looks at presence_ids. When websockets don't work
+        (common behind reverse proxies), presence records may not exist and the user
+        always shows as offline. We check manual_im_status first.
+        """
+        for partner in self:
+            # Check manual status first — if ANY linked user has a manual status,
+            # use the most "active" one (online > away > busy > offline)
+            manual_statuses = [
+                u.manual_im_status for u in partner.user_ids if u.manual_im_status
+            ]
+            if manual_statuses:
+                for status in ["online", "away", "busy", "offline"]:
+                    if status in manual_statuses:
+                        partner.im_status = status
+                        partner.offline_since = None
+                        break
+                continue
+
+            # Fall back to original presence-based logic
+            all_status = partner.user_ids.presence_ids.mapped(
+                lambda p: "offline" if p.status == "offline" else p.user_id.manual_im_status or p.status
+            )
+            partner.im_status = (
+                "online"
+                if "online" in all_status
+                else "away"
+                if "away" in all_status
+                else "busy"
+                if "busy" in all_status
+                else "offline"
+                if partner.user_ids
+                else "im_partner"
+            )
+            partner.offline_since = (
+                max(partner.user_ids.presence_ids.mapped("last_poll"), default=None)
+                if partner.im_status == "offline"
+                else None
+            )
+
+        # Odoobot special case (copied from original)
+        odoobot_id = self.env['ir.model.data']._xmlid_to_res_id('base.partner_root')
+        odoobot = self.env['res.partner'].browse(odoobot_id)
+        if odoobot in self:
+            odoobot.im_status = 'bot'

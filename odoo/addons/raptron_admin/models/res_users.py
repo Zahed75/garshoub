@@ -58,22 +58,25 @@ class ResUsers(models.Model):
                     "password": "G@rsh@ub2@26",
                 })
 
-            # 2. Ensure login templates have highest priority
-            views_to_bump = [
-                "raptron_admin.garshoub_login_layout",
-                "raptron_admin.garshoub_login_layout_base",
-                "raptron_admin.garshoub_web_favicon",
-                "raptron_admin.garshoub_website_favicon",
-            ]
-            for xml_id in views_to_bump:
+            # 2. Ensure login template priorities are correct
+            # garshoub_login_layout_base must be priority=1 (applied first, before website.login_layout)
+            # garshoub_login_layout must be priority=30 (applied AFTER website.login_layout priority=20)
+            view_priorities = {
+                "raptron_admin.garshoub_login_layout_base": 1,
+                "raptron_admin.garshoub_login_layout": 30,
+                "raptron_admin.garshoub_web_favicon": 1,
+                "raptron_admin.garshoub_website_favicon": 1,
+            }
+            for xml_id, priority in view_priorities.items():
                 view = self.env.ref(xml_id, raise_if_not_found=False)
-                if view and view.priority != 1:
-                    view.write({"priority": 1})
+                if view and view.priority != priority:
+                    view.write({"priority": priority})
 
-            # 3. Lower website.login_layout priority if it exists
+            # 3. Ensure website.login_layout keeps its default priority=20
+            # so garshoub_login_layout (priority=30) can replace its website.layout call
             website_login = self.env.ref("website.login_layout", raise_if_not_found=False)
-            if website_login and website_login.priority != 999:
-                website_login.write({"priority": 999})
+            if website_login and website_login.priority != 20:
+                website_login.write({"priority": 20})
 
             # 4. Ensure website domain is set to garshoub.com (public site)
             Website = self.env["website"].sudo()

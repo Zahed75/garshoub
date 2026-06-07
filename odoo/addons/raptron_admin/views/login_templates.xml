@@ -18,10 +18,16 @@
         and replace it entirely with our own web.frontend_layout call.
     -->
 
+    <!--
+        Override website's login layout by inheriting from web.login_layout
+        with priority=30 (higher than website.login_layout's priority=20).
+        This ensures our xpath runs AFTER website.login_layout injects
+        t-call='website.layout', so we can replace it with our custom layout.
+    -->
     <template id="garshoub_login_layout"
-              inherit_id="website.login_layout"
+              inherit_id="web.login_layout"
               name="Al Garshoub Login"
-              priority="1">
+              priority="30">
 
         <xpath expr="//t[@t-call='website.layout']" position="replace">
             <t t-call="web.frontend_layout">

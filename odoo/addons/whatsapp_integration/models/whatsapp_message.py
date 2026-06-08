@@ -2,7 +2,7 @@ from odoo import models, fields, api
 
 
 class WhatsAppMessage(models.Model):
-    _name = 'whatsapp.message'
+    _name = 'garshoub.whatsapp.log'
     _description = 'WhatsApp Message Log'
     _order = 'create_date desc'
 

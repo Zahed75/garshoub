@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_whatsapp_message_user,whatsapp.message user,model_whatsapp_message,base.group_user,1,1,1,0
+access_garshoub_whatsapp_log_user,garshoub.whatsapp.log user,model_garshoub_whatsapp_log,base.group_user,1,1,1,0

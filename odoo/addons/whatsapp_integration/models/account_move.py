@@ -9,7 +9,7 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     whatsapp_message_ids = fields.One2many(
-        'whatsapp.message', 'invoice_id',
+        'garshoub.whatsapp.log', 'invoice_id',
         string='WhatsApp Messages',
     )
     whatsapp_sent = fields.Boolean(string='WhatsApp Sent', default=False)
@@ -22,7 +22,7 @@ class AccountMove(models.Model):
 
         partner = self.partner_id
         if not partner.mobile and not partner.phone:
-            self.env['whatsapp.message'].create({
+            self.env['garshoub.whatsapp.log'].create({
                 'partner_id': partner.id,
                 'invoice_id': self.id,
                 'message_type': 'invoice_notification',
@@ -42,7 +42,7 @@ class AccountMove(models.Model):
         message_body = self._prepare_whatsapp_invoice_message()
         result = self._send_whatsapp_message(phone, message_body)
 
-        self.env['whatsapp.message'].create({
+        self.env['garshoub.whatsapp.log'].create({
             'name': result.get('message_id', ''),
             'partner_id': partner.id,
             'invoice_id': self.id,
@@ -135,7 +135,7 @@ class AccountMove(models.Model):
                     continue
 
                 # Check if this reminder level was already sent
-                existing = self.env['whatsapp.message'].search([
+                existing = self.env['garshoub.whatsapp.log'].search([
                     ('invoice_id', '=', invoice.id),
                     ('message_type', '=', 'payment_reminder'),
                     ('reminder_level', '=', level),
@@ -164,7 +164,7 @@ class AccountMove(models.Model):
                 )
 
                 result = invoice._send_whatsapp_message(phone, body)
-                self.env['whatsapp.message'].create({
+                self.env['garshoub.whatsapp.log'].create({
                     'name': result.get('message_id', ''),
                     'partner_id': partner.id,
                     'invoice_id': invoice.id,

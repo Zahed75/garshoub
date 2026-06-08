@@ -2,7 +2,6 @@
 <odoo>
     <record id="group_pos_credit_sale" model="res.groups">
         <field name="name">POS Credit Sale</field>
-        <field name="category_id" ref="base.module_category_point_of_sale"/>
         <field name="implied_ids" eval="[(4, ref('point_of_sale.group_pos_user'))]"/>
     </record>
 </odoo>

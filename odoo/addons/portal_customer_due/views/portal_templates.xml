@@ -1,30 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <template id="portal_my_home_due" inherit_id="portal.portal_my_home" name="Portal My Home: Due Amount">
-        <xpath expr="//div[hasclass('o_portal_docs')]/div[hasclass('o_portal_index_card')][1]" position="before">
-            <div class="o_portal_index_card col-md-6 col-lg-5 gap-2">
-                <div class="d-flex align-items-center justify-content-start gap-2 border rounded p-3 bg-danger-subtle">
-                    <div class="bg-danger rounded-circle flex-shrink-0 d-flex align-items-center justify-content-center text-white" style="width:40px;height:40px;">
-                        <i class="fa fa-money"/>
-                    </div>
-                    <div>
-                        <span class="text-muted">Total Due Amount</span>
-                        <h5 class="mb-0 fw-bold">
-                            <t t-out="due_amount" t-options="{'widget': 'monetary', 'display_currency': user.partner_id.property_product_pricelist.currency_id}"/>
-                        </h5>
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <div class="o_portal_my_due row g-2 mt-3">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center gap-2 border rounded p-3 bg-danger-subtle">
+                        <div class="bg-danger rounded-circle flex-shrink-0 d-flex align-items-center justify-content-center text-white" style="width:40px;height:40px;">
+                            <i class="fa fa-money"/>
+                        </div>
+                        <div>
+                            <span class="text-muted">Total Due Amount</span>
+                            <h5 class="mb-0 fw-bold">
+                                <t t-out="due_amount" t-options="{'widget': 'monetary', 'display_currency': user.partner_id.property_product_pricelist.currency_id}"/>
+                            </h5>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="o_portal_index_card col-md-6 col-lg-5 gap-2">
-                <div class="d-flex align-items-center justify-content-start gap-2 border rounded p-3 bg-warning-subtle">
-                    <div class="bg-warning rounded-circle flex-shrink-0 d-flex align-items-center justify-content-center text-white" style="width:40px;height:40px;">
-                        <i class="fa fa-exclamation-triangle"/>
-                    </div>
-                    <div>
-                        <span class="text-muted">Overdue Amount</span>
-                        <h5 class="mb-0 fw-bold">
-                            <t t-out="overdue_amount" t-options="{'widget': 'monetary', 'display_currency': user.partner_id.property_product_pricelist.currency_id}"/>
-                        </h5>
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center gap-2 border rounded p-3 bg-warning-subtle">
+                        <div class="bg-warning rounded-circle flex-shrink-0 d-flex align-items-center justify-content-center text-white" style="width:40px;height:40px;">
+                            <i class="fa fa-exclamation-triangle"/>
+                        </div>
+                        <div>
+                            <span class="text-muted">Overdue Amount</span>
+                            <h5 class="mb-0 fw-bold">
+                                <t t-out="overdue_amount" t-options="{'widget': 'monetary', 'display_currency': user.partner_id.property_product_pricelist.currency_id}"/>
+                            </h5>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -32,7 +34,7 @@
     </template>
 
     <template id="portal_breadcrumbs_due" inherit_id="portal.portal_breadcrumbs" name="Portal Breadcrumbs: My Dues">
-        <xpath expr="//ol[hasclass('o_portal_submenu')]/li[@t-if='page_name == \"my_account\"']" position="after">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
             <li t-if="page_name == 'dues'" class="breadcrumb-item active">My Dues</li>
         </xpath>
     </template>
@@ -119,10 +121,4 @@
         </t>
     </template>
 
-    <record id="portal_menu_dues" model="website.menu">
-        <field name="name">My Dues</field>
-        <field name="url">/my/dues</field>
-        <field name="parent_id" ref="portal.portal_menu"/>
-        <field name="sequence">35</field>
-    </record>
 </odoo>

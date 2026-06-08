@@ -5,7 +5,7 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     payment_status = fields.Char(
-        string='Payment Status',
+        string='Paid Status',
         compute='_compute_payment_status',
         store=False,
     )

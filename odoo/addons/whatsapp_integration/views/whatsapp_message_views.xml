@@ -37,8 +37,8 @@
                         </group>
                     </group>
                     <field name="body"/>
-                    <field name="error_message" attrs="{'invisible': [('status', '!=', 'failed')]}">
-                    </field>
+                    <field name="error_message" invisible="status != 'failed'"/>
+
                 </sheet>
             </form>
         </field>

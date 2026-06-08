@@ -10,12 +10,9 @@
                 <field name="order_date"/>
                 <field name="total_amount"/>
                 <field name="status"/>
-                <button name="action_in_progress" string="Start" type="object" icon="fa-play" attrs="{'invisible': [('status', '!=', 'new')]}">
-                </button>
-                <button name="action_ready" string="Ready" type="object" icon="fa-check" attrs="{'invisible': [('status', '!=', 'in_progress')]}">
-                </button>
-                <button name="action_delivered" string="Delivered" type="object" icon="fa-truck" attrs="{'invisible': [('status', '!=', 'ready')]}">
-                </button>
+                <button name="action_in_progress" string="Start" type="object" icon="fa-play" invisible="status != 'new'"/>
+                <button name="action_ready" string="Ready" type="object" icon="fa-check" invisible="status != 'in_progress'"/>
+                <button name="action_delivered" string="Delivered" type="object" icon="fa-truck" invisible="status != 'ready'"/>
             </tree>
         </field>
     </record>
@@ -26,12 +23,9 @@
         <field name="arch" type="xml">
             <form string="Kitchen Order">
                 <header>
-                    <button name="action_in_progress" string="In Progress" type="object" class="oe_highlight" attrs="{'invisible': [('status', '!=', 'new')]}">
-                    </button>
-                    <button name="action_ready" string="Ready for Delivery" type="object" class="oe_highlight" attrs="{'invisible': [('status', '!=', 'in_progress')]}">
-                    </button>
-                    <button name="action_delivered" string="Delivered" type="object" attrs="{'invisible': [('status', '!=', 'ready')]}">
-                    </button>
+                    <button name="action_in_progress" string="In Progress" type="object" class="oe_highlight" invisible="status != 'new'"/>
+                    <button name="action_ready" string="Ready for Delivery" type="object" class="oe_highlight" invisible="status != 'in_progress'"/>
+                    <button name="action_delivered" string="Delivered" type="object" invisible="status != 'ready'"/>
                     <field name="status" widget="statusbar" statusbar_visible="new,in_progress,ready,delivered"/>
                 </header>
                 <sheet>

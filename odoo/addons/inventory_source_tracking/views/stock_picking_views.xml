@@ -33,7 +33,7 @@
                 <filter name="source_transfer" string="Internal Transfer" domain="[('source_from', '=', 'transfer')]"/>
                 <filter name="source_return" string="Return" domain="[('source_from', '=', 'return')]"/>
                 <filter name="source_other" string="Other" domain="[('source_from', '=', 'other')]"/>
-                <group expand="0" string="Group By">
+                <group string="Group By">
                     <filter name="group_source_from" string="Source From" context="{'group_by': 'source_from'}"/>
                 </group>
             </field>

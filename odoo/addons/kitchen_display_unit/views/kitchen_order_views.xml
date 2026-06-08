@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_kitchen_order_tree" model="ir.ui.view">
+        <field name="name">kitchen.order.tree</field>
+        <field name="model">kitchen.order</field>
+        <field name="arch" type="xml">
+            <tree string="Kitchen Orders" decoration-info="status == 'new'" decoration-warning="status == 'in_progress'" decoration-success="status == 'ready'">
+                <field name="name"/>
+                <field name="partner_name"/>
+                <field name="order_date"/>
+                <field name="total_amount"/>
+                <field name="status"/>
+                <button name="action_in_progress" string="Start" type="object" icon="fa-play" attrs="{'invisible': [('status', '!=', 'new')]}">
+                </button>
+                <button name="action_ready" string="Ready" type="object" icon="fa-check" attrs="{'invisible': [('status', '!=', 'in_progress')]}">
+                </button>
+                <button name="action_delivered" string="Delivered" type="object" icon="fa-truck" attrs="{'invisible': [('status', '!=', 'ready')]}">
+                </button>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_kitchen_order_form" model="ir.ui.view">
+        <field name="name">kitchen.order.form</field>
+        <field name="model">kitchen.order</field>
+        <field name="arch" type="xml">
+            <form string="Kitchen Order">
+                <header>
+                    <button name="action_in_progress" string="In Progress" type="object" class="oe_highlight" attrs="{'invisible': [('status', '!=', 'new')]}">
+                    </button>
+                    <button name="action_ready" string="Ready for Delivery" type="object" class="oe_highlight" attrs="{'invisible': [('status', '!=', 'in_progress')]}">
+                    </button>
+                    <button name="action_delivered" string="Delivered" type="object" attrs="{'invisible': [('status', '!=', 'ready')]}">
+                    </button>
+                    <field name="status" widget="statusbar" statusbar_visible="new,in_progress,ready,delivered"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="partner_name"/>
+                            <field name="partner_phone"/>
+                            <field name="order_date"/>
+                        </group>
+                        <group>
+                            <field name="pos_order_id"/>
+                            <field name="sale_order_id"/>
+                            <field name="total_amount"/>
+                        </group>
+                    </group>
+                    <field name="delivery_address"/>
+                    <field name="notes"/>
+                    <field name="order_lines">
+                        <tree editable="bottom">
+                            <field name="product_name"/>
+                            <field name="quantity"/>
+                            <field name="subtotal"/>
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_kitchen_order_search" model="ir.ui.view">
+        <field name="name">kitchen.order.search</field>
+        <field name="model">kitchen.order</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_name"/>
+                <field name="partner_phone"/>
+                <filter name="new" string="New" domain="[('status', '=', 'new')]"/>
+                <filter name="in_progress" string="In Progress" domain="[('status', '=', 'in_progress')]"/>
+                <filter name="ready" string="Ready" domain="[('status', '=', 'ready')]"/>
+                <filter name="delivered" string="Delivered" domain="[('status', '=', 'delivered')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_status" string="Status" context="{'group_by': 'status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_kitchen_order" model="ir.actions.act_window">
+        <field name="name">Kitchen Orders</field>
+        <field name="res_model">kitchen.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_kitchen_order_search"/>
+    </record>
+
+    <menuitem id="menu_kitchen_order_root" name="Kitchen Display" parent="point_of_sale.menu_point_root" sequence="50"/>
+    <menuitem id="menu_kitchen_order" name="Orders" parent="menu_kitchen_order_root" action="action_kitchen_order" sequence="10"/>
+
+    <record id="seq_kitchen_order" model="ir.sequence">
+        <field name="name">Kitchen Order</field>
+        <field name="code">kitchen.order</field>
+        <field name="prefix">KD-</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

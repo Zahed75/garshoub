@@ -6,7 +6,16 @@
     'author': 'Zahed Hasan',
     'website': 'https://raptron.com',
     # website is included so our login/favicon overrides load AFTER website's templates
-    'depends': ['base', 'mail', 'web', 'crm', 'account', 'website'],
+    'depends': [
+        'base', 'mail', 'web', 'crm', 'account', 'website',
+        'invoice_paid_status',
+        'inventory_source_tracking',
+        'portal_customer_due',
+        'pos_credit_customer',
+        'kitchen_display_unit',
+        'whatsapp_integration',
+        'website_ecommerce_grocery',
+    ],
     'data': [
         'security/raptron_admin_groups.xml',
         'security/ir.model.access.csv',

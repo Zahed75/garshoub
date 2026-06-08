@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_product_public_category_form_grocery" model="ir.ui.view">
+        <field name="name">product.public.category.form.grocery</field>
+        <field name="model">product.public.category</field>
+        <field name="inherit_id" ref="website_sale.product_public_category_form_view"/>
+        <field name="arch" type="xml">
+            <field name="parent_id" position="after">
+                <field name="category_image"/>
+                <field name="description"/>
+                <field name="sequence"/>
+                <field name="is_featured"/>
+            </field>
+        </field>
+    </record>
+</odoo>

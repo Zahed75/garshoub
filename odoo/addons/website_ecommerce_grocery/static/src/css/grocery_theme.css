@@ -1,0 +1,61 @@
+.grocery-hero {
+    background: linear-gradient(135deg, #1a5f2a 0%, #2e8b47 50%, #1a5f2a 100%);
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+}
+
+.category-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #eee;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.category-image img {
+    border-radius: 12px;
+}
+
+.grocery-filters button {
+    border-radius: 25px;
+    padding: 8px 20px;
+}
+
+.grocery-filters button.active {
+    background-color: #1a5f2a;
+    border-color: #1a5f2a;
+    color: #fff;
+}
+
+/* Product cards */
+.oe_product_cart {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #eee;
+    transition: all 0.3s ease;
+}
+
+.oe_product_cart:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+/* Navbar override for grocery branding */
+header .navbar {
+    background: #1a5f2a !important;
+}
+
+header .navbar-brand,
+header .nav-link {
+    color: #fff !important;
+}
+
+header .nav-link:hover {
+    color: #f0f0f0 !important;
+}

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="portal_my_home_due" inherit_id="portal.portal_my_home" name="Portal My Home: Due Amount">
+        <xpath expr="//div[hasclass('o_portal_docs')]/div[hasclass('o_portal_index_card')][1]" position="before">
+            <div class="o_portal_index_card col-md-6 col-lg-5 gap-2">
+                <div class="d-flex align-items-center justify-content-start gap-2 border rounded p-3 bg-danger-subtle">
+                    <div class="bg-danger rounded-circle flex-shrink-0 d-flex align-items-center justify-content-center text-white" style="width:40px;height:40px;">
+                        <i class="fa fa-money"/>
+                    </div>
+                    <div>
+                        <span class="text-muted">Total Due Amount</span>
+                        <h5 class="mb-0 fw-bold">
+                            <t t-out="due_amount" t-options="{'widget': 'monetary', 'display_currency': user.partner_id.property_product_pricelist.currency_id}"/>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <div class="o_portal_index_card col-md-6 col-lg-5 gap-2">
+                <div class="d-flex align-items-center justify-content-start gap-2 border rounded p-3 bg-warning-subtle">
+                    <div class="bg-warning rounded-circle flex-shrink-0 d-flex align-items-center justify-content-center text-white" style="width:40px;height:40px;">
+                        <i class="fa fa-exclamation-triangle"/>
+                    </div>
+                    <div>
+                        <span class="text-muted">Overdue Amount</span>
+                        <h5 class="mb-0 fw-bold">
+                            <t t-out="overdue_amount" t-options="{'widget': 'monetary', 'display_currency': user.partner_id.property_product_pricelist.currency_id}"/>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="portal_breadcrumbs_due" inherit_id="portal.portal_breadcrumbs" name="Portal Breadcrumbs: My Dues">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]/li[@t-if='page_name == \"my_account\"']" position="after">
+            <li t-if="page_name == 'dues'" class="breadcrumb-item active">My Dues</li>
+        </xpath>
+    </template>
+
+    <template id="portal_my_dues" name="My Dues">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-12">
+                        <h3>My Dues</h3>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <div class="card border-danger">
+                                    <div class="card-body">
+                                        <h6 class="card-subtitle mb-2 text-muted">Total Due</h6>
+                                        <h4 class="card-title text-danger">
+                                            <t t-out="total_due" t-options="{'widget': 'monetary', 'display_currency': user.partner_id.property_product_pricelist.currency_id}"/>
+                                        </h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card border-warning">
+                                    <div class="card-body">
+                                        <h6 class="card-subtitle mb-2 text-muted">Overdue</h6>
+                                        <h4 class="card-title text-warning">
+                                            <t t-out="total_overdue" t-options="{'widget': 'monetary', 'display_currency': user.partner_id.property_product_pricelist.currency_id}"/>
+                                        </h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice #</th>
+                                        <th>Date</th>
+                                        <th>Due Date</th>
+                                        <th class="text-end">Total</th>
+                                        <th class="text-end">Due Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="invoices" t-as="inv">
+                                        <tr>
+                                            <td>
+                                                <a t-att-href="'/my/invoices/%s' % inv.id">
+                                                    <t t-out="inv.name"/>
+                                                </a>
+                                            </td>
+                                            <td><t t-out="inv.invoice_date"/></td>
+                                            <td>
+                                                <t t-if="inv.invoice_date_due">
+                                                    <span t-att-class="'text-danger fw-bold' if inv.invoice_date_due &lt; datetime.date.today() else ''">
+                                                        <t t-out="inv.invoice_date_due"/>
+                                                    </span>
+                                                </t>
+                                            </td>
+                                            <td class="text-end">
+                                                <t t-out="inv.amount_total" t-options="{'widget': 'monetary', 'display_currency': inv.currency_id}"/>
+                                            </td>
+                                            <td class="text-end fw-bold">
+                                                <t t-out="inv.amount_residual" t-options="{'widget': 'monetary', 'display_currency': inv.currency_id}"/>
+                                            </td>
+                                            <td>
+                                                <span t-if="inv.payment_state == 'not_paid'" class="badge bg-danger">Unpaid</span>
+                                                <span t-if="inv.payment_state == 'partial'" class="badge bg-warning text-dark">Partial</span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <tr t-if="not invoices">
+                                        <td colspan="6" class="text-center text-muted">No outstanding invoices.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <record id="portal_menu_dues" model="website.menu">
+        <field name="name">My Dues</field>
+        <field name="url">/my/dues</field>
+        <field name="parent_id" ref="portal.portal_menu"/>
+        <field name="sequence">35</field>
+    </record>
+</odoo>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_picking_form_source_from" model="ir.ui.view">
+        <field name="name">stock.picking.form.source.from</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <field name="origin" position="after">
+                <field name="source_from" required="1"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_picking_tree_source_from" model="ir.ui.view">
+        <field name="name">stock.picking.tree.source.from</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <field name="origin" position="after">
+                <field name="source_from" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_picking_internal_search_source_from" model="ir.ui.view">
+        <field name="name">stock.picking.search.source.from</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <field name="origin" position="after">
+                <field name="source_from"/>
+                <filter name="source_purchase" string="Purchase" domain="[('source_from', '=', 'purchase')]"/>
+                <filter name="source_transfer" string="Internal Transfer" domain="[('source_from', '=', 'transfer')]"/>
+                <filter name="source_return" string="Return" domain="[('source_from', '=', 'return')]"/>
+                <filter name="source_other" string="Other" domain="[('source_from', '=', 'other')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_source_from" string="Source From" context="{'group_by': 'source_from'}"/>
+                </group>
+            </field>
+        </field>
+    </record>
+</odoo>

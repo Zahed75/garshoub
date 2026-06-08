@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_whatsapp_message_tree" model="ir.ui.view">
+        <field name="name">whatsapp.message.tree</field>
+        <field name="model">whatsapp.message</field>
+        <field name="arch" type="xml">
+            <tree string="WhatsApp Messages" decoration-success="status == 'sent'" decoration-danger="status == 'failed'">
+                <field name="create_date"/>
+                <field name="partner_id"/>
+                <field name="invoice_id"/>
+                <field name="message_type"/>
+                <field name="phone"/>
+                <field name="status"/>
+                <field name="reminder_level"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_whatsapp_message_form" model="ir.ui.view">
+        <field name="name">whatsapp.message.form</field>
+        <field name="model">whatsapp.message</field>
+        <field name="arch" type="xml">
+            <form string="WhatsApp Message">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="partner_id"/>
+                            <field name="invoice_id"/>
+                            <field name="phone"/>
+                        </group>
+                        <group>
+                            <field name="message_type"/>
+                            <field name="status"/>
+                            <field name="reminder_level"/>
+                            <field name="create_date"/>
+                        </group>
+                    </group>
+                    <field name="body"/>
+                    <field name="error_message" attrs="{'invisible': [('status', '!=', 'failed')]}">
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_whatsapp_message" model="ir.actions.act_window">
+        <field name="name">WhatsApp Messages</field>
+        <field name="res_model">whatsapp.message</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_whatsapp_root" name="WhatsApp" parent="account.menu_finance_configuration" sequence="50"/>
+    <menuitem id="menu_whatsapp_message" name="Message Log" parent="menu_whatsapp_root" action="action_whatsapp_message" sequence="10"/>
+</odoo>

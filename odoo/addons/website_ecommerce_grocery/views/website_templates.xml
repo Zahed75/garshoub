@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Grocery Homepage -->
+    <template id="grocery_homepage" name="Grocery Home">
+        <t t-call="website.layout">
+            <div class="grocery-hero">
+                <div class="container py-5">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6">
+                            <h1 class="display-4 fw-bold text-white">Al Garshoub Foodstuff</h1>
+                            <p class="lead text-white-50">Premium foodstuff trading in Ajman, UAE. Quality products for your business.</p>
+                            <a href="/shop" class="btn btn-warning btn-lg">Browse Products</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container py-5">
+                <h2 class="mb-4">Shop by Category</h2>
+                <div class="row">
+                    <t t-foreach="categories" t-as="cat">
+                        <div class="col-6 col-md-4 col-lg-3 mb-4">
+                            <a t-att-href="'/shop/category/%s' % cat.id" class="text-decoration-none">
+                                <div class="category-card text-center">
+                                    <div class="category-image mb-2">
+                                        <img t-if="cat.category_image"
+                                             t-att-src="'/web/image/product.public.category/%s/category_image' % cat.id"
+                                             class="img-fluid rounded" style="height: 150px; object-fit: cover; width: 100%;"/>
+                                        <div t-else="" class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 150px;">
+                                            <i class="fa fa-shopping-basket fa-3x text-muted"/>
+                                        </div>
+                                    </div>
+                                    <h5 class="text-dark" t-esc="cat.name"/>
+                                </div>
+                            </a>
+                        </div>
+                    </t>
+                </div>
+            </div>
+
+            <div class="container py-5">
+                <h2 class="mb-4">Featured Products</h2>
+                <div class="row">
+                    <t t-foreach="featured_products" t-as="product">
+                        <div class="col-6 col-md-4 col-lg-3 mb-4">
+                            <t t-call="website_sale.products_item"/>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Override shop page with grocery styling -->
+    <template id="grocery_shop" inherit_id="website_sale.products" name="Grocery Shop">
+        <xpath expr="//div[@id='products_grid']" position="before">
+            <div class="grocery-filters mb-4">
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-outline-secondary active" data-filter="all">All</button>
+                    <t t-foreach="categories" t-as="cat">
+                        <button class="btn btn-outline-secondary" t-att-data-filter="cat.id" t-esc="cat.name"/>
+                    </t>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

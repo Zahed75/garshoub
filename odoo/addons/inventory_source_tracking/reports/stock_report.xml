@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="report_picking_source_from" model="ir.ui.view">
+        <field name="name">stock.report.picking.source.from</field>
+        <field name="inherit_id" ref="stock.report_picking"/>
+        <field name="type">qweb</field>
+        <field name="arch" type="xml">
+            <div class="row" position="before">
+                <div class="row">
+                    <div class="col-12">
+                        <strong>Source From:</strong>
+                        <span t-field="o.source_from"/>
+                    </div>
+                </div>
+                <br/>
+            </div>
+        </field>
+    </record>
+
+    <record id="report_delivery_document_source_from" model="ir.ui.view">
+        <field name="name">stock.report.delivery.document.source.from</field>
+        <field name="inherit_id" ref="stock.report_delivery_document"/>
+        <field name="type">qweb</field>
+        <field name="arch" type="xml">
+            <div class="row" position="before">
+                <div class="row">
+                    <div class="col-12">
+                        <strong>Source From:</strong>
+                        <span t-field="o.source_from"/>
+                    </div>
+                </div>
+                <br/>
+            </div>
+        </field>
+    </record>
+</odoo>

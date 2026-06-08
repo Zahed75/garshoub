@@ -4,7 +4,7 @@
         <field name="name">garshoub.whatsapp.log.tree</field>
         <field name="model">garshoub.whatsapp.log</field>
         <field name="arch" type="xml">
-            <tree string="WhatsApp Messages" decoration-success="status == 'sent'" decoration-danger="status == 'failed'">
+            <list string="WhatsApp Messages" decoration-success="status == 'sent'" decoration-danger="status == 'failed'">
                 <field name="create_date"/>
                 <field name="partner_id"/>
                 <field name="invoice_id"/>
@@ -12,7 +12,7 @@
                 <field name="phone"/>
                 <field name="status"/>
                 <field name="reminder_level"/>
-            </tree>
+            </list>
         </field>
     </record>
 

@@ -4,7 +4,7 @@
         <field name="name">kitchen.order.tree</field>
         <field name="model">kitchen.order</field>
         <field name="arch" type="xml">
-            <tree string="Kitchen Orders" decoration-info="status == 'new'" decoration-warning="status == 'in_progress'" decoration-success="status == 'ready'">
+            <list string="Kitchen Orders" decoration-info="status == 'new'" decoration-warning="status == 'in_progress'" decoration-success="status == 'ready'">
                 <field name="name"/>
                 <field name="partner_name"/>
                 <field name="order_date"/>
@@ -13,7 +13,7 @@
                 <button name="action_in_progress" string="Start" type="object" icon="fa-play" invisible="status != 'new'"/>
                 <button name="action_ready" string="Ready" type="object" icon="fa-check" invisible="status != 'in_progress'"/>
                 <button name="action_delivered" string="Delivered" type="object" icon="fa-truck" invisible="status != 'ready'"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -45,11 +45,11 @@
                     <field name="delivery_address"/>
                     <field name="notes"/>
                     <field name="order_lines">
-                        <tree editable="bottom">
+                        <list editable="bottom">
                             <field name="product_name"/>
                             <field name="quantity"/>
                             <field name="subtotal"/>
-                        </tree>
+                        </list>
                     </field>
                 </sheet>
             </form>

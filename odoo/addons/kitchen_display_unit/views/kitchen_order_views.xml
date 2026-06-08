@@ -68,8 +68,8 @@
                 <filter name="in_progress" string="In Progress" domain="[('status', '=', 'in_progress')]"/>
                 <filter name="ready" string="Ready" domain="[('status', '=', 'ready')]"/>
                 <filter name="delivered" string="Delivered" domain="[('status', '=', 'delivered')]"/>
-                <group string="Group By">
-                    <filter name="group_status" string="Status" context="{'group_by': 'status'}"/>
+                <group>
+                    <filter string="Status" name="group_status" domain="[]" context="{'group_by': 'status'}"/>
                 </group>
             </search>
         </field>
